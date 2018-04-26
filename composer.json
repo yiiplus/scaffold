@@ -1,0 +1,76 @@
+{
+    "name": "yiiplus/scaffold",
+    "description": "scaffold是一个基于Yii2高级项目模版工程化实现的应用程序",
+    "keywords": ["yii2", "framework", "scaffold", "project template"],
+    "homepage": "https://github.com/yiiplus/",
+    "type": "project",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiiplus/scaffold/issues?state=open",
+        "source": "https://github.com/yiiplus/scaffold"
+    },
+    "authors": [
+        {
+            "name": "Hongbin Chen",
+            "email": "87003637@qq.com"
+        },
+        {
+            "name": "xiankun Geng",
+            "email": "ge2x3k2@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.1.0",
+        "yiisoft/yii2": "^2.0.0",
+        "yiisoft/yii2-bootstrap": "^2.0.0",
+        "yiisoft/yii2-swiftmailer": "^2.0.0",
+        "yiisoft/yii2-authclient": "^2.0.0",
+        "yiisoft/yii2-httpclient": "~2.0.0",
+        "yiisoft/yii2-jui": "^2.0.0",
+        "yiisoft/yii2-redis": "~2.0.0",
+        "yiisoft/yii2-queue": "~2.0.0",
+        "yiisoft/yii2-elasticsearch": "~2.0.0",
+        "yiiplus/yii2-fis-smarty": "^2.0.0",
+        "yiiplus/yii2-desktop": "^2.0.0",
+        "sentry/sentry": "^1.8",
+        "mito/yii2-sentry": "~1.0.0",
+        "firebase/php-jwt": "^5.0"
+    },
+    "require-dev": {
+        "yiisoft/yii2-debug": "~2.0.0",
+        "yiisoft/yii2-gii": "~2.0.0",
+        "yiisoft/yii2-faker": "~2.0.0",
+        "codeception/base": "^2.2.3",
+        "codeception/verify": "~0.3.1"
+    },
+    "config": {
+        "process-timeout": 3600
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    },
+    "scripts": {
+        "dev:build": [
+            "cp docker/project/dev/docker-compose.yaml docker-compose.yaml",
+            "@docker:start",
+            "docker-compose exec -T www composer install -vvv",
+            "docker-compose exec -T www ./init --env=Development --overwrite=y",
+            "@fis3:build",
+            "docker-compose ps"
+        ],
+        "fis3:build": [
+            "docker-compose exec -T fis3 h5/fis3/build.sh",
+            "docker-compose exec -T fis3 pc/fis3/build.sh"
+        ],
+        "docker:start": [
+          "docker-compose up --force-recreate -d"
+        ],
+        "docker:cleanup": [
+            "docker-compose rm -fsv"
+        ]
+    }
+}

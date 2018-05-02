@@ -7,7 +7,7 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-admin',
+    'id' => 'admin',
     'name' => 'Admin管理系统',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
@@ -28,8 +28,7 @@ return [
             'identityCookie' => ['name' => '_identity-admin', 'httpOnly' => true],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the admin
-            'name' => 'advanced-admin',
+            'name' => '_session-admin',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

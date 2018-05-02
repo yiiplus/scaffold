@@ -7,10 +7,10 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-app',
+    'id' => 'app',
     'defaultRoute' => 'v1/',
     'basePath' => dirname(__DIR__),
-    'controllerNamespace' => 'app\controllers',
+    // 'controllerNamespace' => 'app\controllers',
     'bootstrap' => ['log'],
     'modules' => [
         'v1' => [
@@ -29,11 +29,6 @@ return [
             'enableAutoLogin' => true,
             'enableSession' => false,
             'loginUrl' => null,
-            'identityCookie' => ['name' => '_identity-app', 'httpOnly' => true],
-        ],
-        'session' => [
-            // this is the name of the session cookie used for login on the app
-            'name' => 'advanced-app',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -43,9 +38,6 @@ return [
                     'levels' => ['error', 'warning'],
                 ],
             ],
-        ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
         ],
         'urlManager' => [
             'enablePrettyUrl' => true,

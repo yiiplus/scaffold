@@ -7,7 +7,7 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-pc',
+    'id' => 'www',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'pc\controllers',
     'bootstrap' => ['log'],
@@ -22,8 +22,7 @@ return [
             'identityCookie' => ['name' => '_identity-pc', 'httpOnly' => true],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the pc
-            'name' => 'advanced-pc',
+            'name' => '_session-pc',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

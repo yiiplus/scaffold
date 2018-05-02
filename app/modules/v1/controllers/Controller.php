@@ -8,8 +8,13 @@ use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 
-abstract class Controller extends \yii\rest\ActiveController
+abstract class Controller extends \yii\rest\Controller
 {
+    public $serializer = [
+        'class' => 'yii\rest\Serializer',
+        'collectionEnvelope' => 'data',
+    ];
+
     public function behaviors()
     {
         $authTokenParam = 'auth_key';
@@ -26,7 +31,7 @@ abstract class Controller extends \yii\rest\ActiveController
             'tokenForm' => 'JWT',
             'authTokenParam' => $authTokenParam,
             'except' => [
-                //'index'
+                "*"
             ],
         ];
         //授权认证支持列表
@@ -34,9 +39,37 @@ abstract class Controller extends \yii\rest\ActiveController
             'class' => QueryParamAuth::className(),
             'tokenParam' => $authTokenParam,
             'except' => [
-                //'index'
+                "*"
             ]
         ];
         return $behaviors;
     }
 }
+
+// abstract class Controller extends \yii\rest\Controller
+// {
+
+//     public $public = false;
+//     public $publicActions = ['options'];
+//     public $rateLimiter = true;
+//     public $filters = [];
+//     public $searchClass;
+
+//     public function behaviors()
+//     {
+//         $behaviors = parent::behaviors();
+
+//         // 权限认证
+//         $behaviors['authenticator'] = [
+//             'class' => QueryParamAuth::className(),
+//         ];
+
+//         // 响应内容格式处理
+//         $behaviors['contentNegotiator']['formats'] = [
+//             'application/json'          => Response::FORMAT_JSON,
+//             'application/javascript'    => Response::FORMAT_JSONP,
+//         ];
+
+//         return $behaviors;
+//     }
+// }

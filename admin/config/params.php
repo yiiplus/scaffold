@@ -5,5 +5,4 @@ return [
         'menuTable' => 'admin_menu',
         'userTable' => 'admin_user',
     ],
-    'adminEmail' => 'admin@example.com',
 ];

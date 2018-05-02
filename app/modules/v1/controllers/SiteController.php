@@ -10,7 +10,7 @@ use common\models\LoginForm;
 /**
  * Default controller for the `tradition` module
  */
-class SiteController extends BaseController
+class SiteController extends Controller
 {
     public function behaviors()
     {

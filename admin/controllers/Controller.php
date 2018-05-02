@@ -1,10 +1,10 @@
 <?php
 
-namespace pc\controllers;
+namespace app\controllers;
 
-use yii\web\Controller;
+use Yii;
 
-class BaseController extends Controller
+abstract class Controller extends \yii\web\Controller
 {
     /**
      * @inheritdoc
@@ -12,8 +12,11 @@ class BaseController extends Controller
     public function behaviors() {
         return parent::behaviors();
     }
+
     /**
      * @inheritdoc
      */
-    public function actions() {}
+    public function actions() {
+        
+    }
 }

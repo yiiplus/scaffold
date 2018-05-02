@@ -1,14 +1,11 @@
 <?php
-namespace pc\controllers;
 
-use Yii;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
+namespace pc\controllers;
 
 /**
  * Site controller
  */
-class SiteController extends BaseController
+class SiteController extends Controller
 {
     /**
      * @inheritdoc

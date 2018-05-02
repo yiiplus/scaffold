@@ -4,8 +4,7 @@
 * 公共别名在`common/config/bootstarp.php`中定义，使用`Yii::getAlias()`访问；
 * 所有自定义助手函数都放在 `common\helpers\` 且方法都未`static`方法；
 * 所有公共模型放在 `common\models` 下;
-* 所有表单模型都继承 `common\core\BaseModel`；
-* 所有控制器都继承 `common\core\Controller` ，每个应用下面应有一个`BaseController`控制器，做为该应用的父控制器，方便做一些公共操作；
+* 每个应用下面应有一个`Controller`控制器，做为该应用的父控制器，方便做一些公共操作；
 
 -------
 

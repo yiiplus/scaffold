@@ -4,12 +4,11 @@ namespace app\modules\v1\controllers;
 
 use app\filters\UriTokenization;
 use yii\filters\ContentNegotiator;
-use yii\rest\Controller;
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 
-class BaseController extends Controller
+abstract class Controller extends \yii\rest\ActiveController
 {
     public function behaviors()
     {

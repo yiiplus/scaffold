@@ -2,10 +2,9 @@
 
 namespace app\modules\v2\controllers;
 
-use yii\rest\Controller;
 use yii\web\Response;
 
-class BaseController extends Controller
+abstract class Controller extends \yii\rest\Controller
 {
     public function behaviors()
     {

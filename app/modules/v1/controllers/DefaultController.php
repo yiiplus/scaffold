@@ -5,8 +5,10 @@ namespace app\modules\v1\controllers;
 /**
  * Default controller for the `v1` module
  */
-class DefaultController extends BaseController
+class DefaultController extends Controller
 {
+    public $modelClass = false;
+
     public function behaviors()
     {
         $behaviors = parent::behaviors();
@@ -26,6 +28,8 @@ class DefaultController extends BaseController
      */
     public function actionIndex()
     {
+
+        echo "asdfasdfasdf";exit;
         return ['hello tradition!'];
     }
 }

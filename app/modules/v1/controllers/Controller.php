@@ -2,11 +2,12 @@
 
 namespace app\modules\v1\controllers;
 
-use app\filters\UriTokenization;
-use yii\filters\ContentNegotiator;
+use Yii;
 use yii\web\Response;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
+use yii\filters\ContentNegotiator;
+use app\filters\UriTokenization;
 
 abstract class Controller extends \yii\rest\Controller
 {

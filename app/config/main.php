@@ -36,12 +36,14 @@ return [
             'showScriptName' => false,
             'rules' => [
                 [
-                    'class' => 'yii\rest\UrlRule', 
+                    'class' => 'yii\rest\UrlRule',
                     'controller' => 'v1/user',
-                    'except' => ['delete', 'create', 'update'],
+                    //'except' => ['index', 'view', 'create', 'update', 'delete'],
                     'extraPatterns' => [
                         'GET search' => 'search',
+                        'GET error'  => 'error',
                     ],
+                    'pluralize' => false,
                 ],
             ],
         ],
@@ -54,6 +56,20 @@ return [
                     'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
                 ],
             ],
+            'on beforeSend' => function ($event) {
+                $response = $event->sender;
+                $data['success'] = $response->isSuccessful;
+                if($response->isSuccessful) {
+                    $data['code']    = 0;
+                    $data['message'] = $response->statusText;
+                    $data['result']  = $response->data;
+                } else {
+                    $data['code']    = $response->data['code']    ? $response->data['code']    : $response->statusCode;
+                    $data['message'] = $response->data['message'] ? $response->data['message'] : $response->statusText;
+                }
+                $response->data = $data;
+                $response->statusCode = 200;
+            },
         ],
     ],
     'params' => $params,

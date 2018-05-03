@@ -11,8 +11,11 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'modules' => [
-        'v1' => ['class' => 'app\modules\v1\Module'],
-        'v2' => ['class' => 'app\modules\v2\Module'],
+        'user' => ['class' => 'app\modules\user\Module'],
+        'shop'   => ['class' => 'app\modules\shop\Module'],
+        'cms'    => ['class' => 'app\modules\cms\Module'],
+        'bbs'    => ['class' => 'app\modules\bbs\Module'],
+        'common' => ['class' => 'app\modules\common\Module'],
     ],
     'components' => [
         'user' => [
@@ -36,12 +39,12 @@ return [
             'showScriptName' => false,
             'rules' => [
                 [
+                    // 账号信息
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => 'v1/user',
-                    //'except' => ['index', 'view', 'create', 'update', 'delete'],
+                    'controller' => 'user/account',
                     'extraPatterns' => [
-                        'GET search' => 'search',
-                        'GET error'  => 'error',
+                        'GET login'  => 'login',
+                        'GET logout' => 'logout',
                     ],
                     'pluralize' => false,
                 ],
@@ -64,14 +67,14 @@ return [
                         'success' => $response->isSuccessful,
                         'code'    => 0,
                         'message' => $response->statusText,
-                        'result'  => $response->data,
+                        'data'  => $response->data,
                     ];
                 } else {
                     if(YII_DEBUG) {
                         $data = [
                             'success'     => $response->isSuccessful,
-                            'code'        => $response->data['code'],
-                            'message'     => $response->data['message'],
+                            'code'        => isset($response->data['code']) ? $response->data['code'] : 100001,
+                            'message'     => isset($response->data['message']) ? $response->data['message'] : '系统错误',
                             'statusCode'  => $response->statusCode,
                             'statusText'  => $response->statusText,
                         ];
@@ -87,7 +90,7 @@ return [
 
                     }
                 }
-                
+
                 $response->data = $data;
                 $response->statusCode = 200;
             },

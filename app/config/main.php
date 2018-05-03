@@ -58,15 +58,36 @@ return [
             ],
             'on beforeSend' => function ($event) {
                 $response = $event->sender;
-                $data['success'] = $response->isSuccessful;
+
                 if($response->isSuccessful) {
-                    $data['code']    = 0;
-                    $data['message'] = $response->statusText;
-                    $data['result']  = $response->data;
+                    $data = [
+                        'success' => $response->isSuccessful,
+                        'code'    => 0,
+                        'message' => $response->statusText,
+                        'result'  => $response->data,
+                    ];
                 } else {
-                    $data['code']    = $response->data['code']    ? $response->data['code']    : $response->statusCode;
-                    $data['message'] = $response->data['message'] ? $response->data['message'] : $response->statusText;
+                    if(YII_DEBUG) {
+                        $data = [
+                            'success'     => $response->isSuccessful,
+                            'code'        => $response->data['code'],
+                            'message'     => $response->data['message'],
+                            'statusCode'  => $response->statusCode,
+                            'statusText'  => $response->statusText,
+                        ];
+                    } else {
+                        $exception = Yii::$app->getErrorHandler()->exception;
+                        $error_code    = $exception->getCode();
+                        $error_message = $exception->getMessage();
+                        $data = [
+                            'success'     => $response->isSuccessful,
+                            'code'        => $error_code ? $error_code : 100001,
+                            'message'     => $error_message ? $error_message : '系统错误',
+                        ];
+
+                    }
                 }
+                
                 $response->data = $data;
                 $response->statusCode = 200;
             },

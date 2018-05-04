@@ -28,6 +28,7 @@ class AccountController extends \app\modules\Controller
         // } catch (Exception $e){
         //     echo $e->getMessage();
         // }
+        
         // throw new \Exception('退出失败', 100002);
         
         return 'suucess';

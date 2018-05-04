@@ -2,9 +2,6 @@
 namespace app\controllers;
 
 use Yii;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use admin\models\AdminLoginForm;
 
 /**
  * Site controller

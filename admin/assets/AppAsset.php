@@ -1,11 +1,11 @@
 <?php
 
-namespace admin\assets;
+namespace app\assets;
 
 use yii\web\AssetBundle;
 
 /**
- * Main admin application asset bundle.
+ * Main application asset bundle.
  */
 class AppAsset extends AssetBundle
 {

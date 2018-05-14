@@ -4,12 +4,6 @@ namespace app\modules;
 
 use Yii;
 use yii\web\Response;
-use yii\helpers\ArrayHelper;
-use yii\filters\ContentNegotiator;
-use yii\filters\RateLimiter;  
-use app\extensions\auth\JwtAuth;
-use app\extensions\auth\TimestampAuth;
-use app\extensions\auth\AccessTokenAuth;
 
 abstract class Controller extends \yii\rest\Controller
 {
@@ -46,27 +40,29 @@ abstract class Controller extends \yii\rest\Controller
         } else {
             // 参数传递安全验证，防止篡改
             $behaviors['tokenValidate'] = [
-                'class' => JwtAuth::className(),
+                'class' => 'app\extensions\auth\JwtAuth',
             ];
 
             // 时间戳验证，防止重放攻击
             $behaviors['timestampValidate'] = [
-                'class' => TimestampAuth::className(),
+                'class' => 'app\extensions\auth\TimestampAuth',
             ];
 
             // 授权验证（Authentication)
             $isPublic = $this->public || in_array(Yii::$app->controller->action->id, $this->publicActions);
             if (!$isPublic) {
                 $behaviors['authValidate'] = [
-                    'class' => AccessTokenAuth::className(),
+                    'class' => 'app\extensions\auth\AccessTokenAuth',
                     'optional'  => ['register', 'login'],
                 ];
             }
-            
+
             // 数率限制 (Rate Limiting)
-             $behaviors['rateLimiter'] = [
-                 'class' => 'yii\filters\RateLimiter',
-             ];
+            $behaviors['rateLimiter'] = [
+                //'class' => 'app\extensions\auth\RateLimiterAuth',
+                'class' => 'yii\filters\RateLimiter',
+                'enableRateLimitHeaders' => true,
+            ];
         }
 
         return $behaviors;
@@ -78,8 +74,8 @@ abstract class Controller extends \yii\rest\Controller
     protected function verbs()
     {
         return [
-            'index' => ['GET', 'HEAD'],
-            'view' => ['GET', 'HEAD'],
+            'index'  => ['GET'],
+            'view'   => ['GET'],
             'create' => ['POST'],
             'update' => ['PUT', 'PATCH'],
             'delete' => ['DELETE'],

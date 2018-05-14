@@ -28,6 +28,20 @@ class AccessTokenAuth extends QueryParamAuth
 {
     public function beforeAction($action)
     {
+        if(Yii::$app->request->isGet)  {
+            $token = Yii::$app->request->get($this->tokenParam, '');
+            if(empty($token)) {
+                throw new ApiException(ApiException::SYSTEM_ACCESS_TOKEN_NULL);
+            }
+        } elseif (Yii::$app->request->isPost) {
+            $token = Yii::$app->request->post($this->tokenParam, '');
+            if(empty($token)) {
+                throw new ApiException(ApiException::SYSTEM_ACCESS_TOKEN_NULL);
+            }
+        } else {
+            throw new ApiException(ApiException::SYSTEM_ILLEGAL_REQUEST);
+        }
+
         try {
             return parent::beforeAction($action);
         } catch (\Exception $exception) {

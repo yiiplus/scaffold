@@ -1,12 +1,12 @@
 <?php
 namespace common\models;
 
-use Yii;  
-use yii\base\NotSupportedException;  
-use yii\behaviors\TimestampBehavior;  
-use yii\db\ActiveRecord;  
-use yii\web\IdentityInterface;  
-use yii\filters\RateLimitInterface;  
+use Yii;
+use yii\base\NotSupportedException;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+use yii\filters\RateLimitInterface;
 
 /**
  * User model
@@ -22,7 +22,7 @@ use yii\filters\RateLimitInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  */
-class User extends ActiveRecord implements IdentityInterface, RateLimitInterface  
+class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
@@ -70,17 +70,17 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::findOne(['access_token' => $token, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['auth_key' => $token, 'status' => self::STATUS_ACTIVE]);
     }
-    
+
     /**
      * 生成access_token
-     * 
+     *
      * @return [type] [description]
      */
-    public function generateAccessToken()  
-    {  
-        $this->access_token = Yii::$app->security->generateRandomString();  
+    public function generateAccessToken()
+    {
+        $this->access_token = Yii::$app->security->generateRandomString();
     }
 
     /**
@@ -200,29 +200,27 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
         $this->password_reset_token = null;
     }
 
-    # 速度控制  6秒内访问3次，注意，数组的第一个不要设置1，设置1会出问题，一定要  
-    #大于2，譬如下面  6秒内只能访问三次  
-    # 文档标注：返回允许的请求的最大数目及时间，例如，[100, 600] 表示在600秒内最多100次的API调用。  
-    public  function getRateLimit($request, $action){  
-        echo 'getRateLimit';exit; 
-         return [3, 6];  
-    }  
-    
-    # 文档标注： 返回剩余的允许的请求和相应的UNIX时间戳数 当最后一次速率限制检查时。  
-    public  function loadAllowance($request, $action){ 
-        echo 'loadAllowance';exit;  
-        //return [1,strtotime(date("Y-m-d H:i:s"))];  
-        //echo $this->allowance;exit;  
-         return [$this->allowance, $this->allowance_updated_at];  
-    }  
-    
-    # allowance 对应user 表的allowance字段  int类型  
-    # allowance_updated_at 对应user allowance_updated_at  int类型  
-    # 文档标注：保存允许剩余的请求数和当前的UNIX时间戳。  
+    # 速度控制  6秒内访问3次，注意，数组的第一个不要设置1，设置1会出问题，一定要
+    #大于2，譬如下面  6秒内只能访问三次
+    # 文档标注：返回允许的请求的最大数目及时间，例如，[100, 600] 表示在600秒内最多100次的API调用。
+    public  function getRateLimit($request, $action){
+        echo 'getRateLimit';exit;
+         return [3, 6];
+    }
+
+    # 文档标注： 返回剩余的允许的请求和相应的UNIX时间戳数 当最后一次速率限制检查时。
+    public  function loadAllowance($request, $action){
+        echo 'loadAllowance';exit;
+        return [$this->allowance, $this->allowance_updated_at];
+    }
+
+    # allowance 对应user 表的allowance字段  int类型
+    # allowance_updated_at 对应user allowance_updated_at  int类型
+    # 文档标注：保存允许剩余的请求数和当前的UNIX时间戳。
     public  function saveAllowance($request, $action, $allowance, $timestamp){
-        echo 'saveAllowance';exit; 
-        $this->allowance = $allowance;  
-        $this->allowance_updated_at = $timestamp;  
-        $this->save();  
-    } 
+        echo 'saveAllowance';exit;
+        $this->allowance = $allowance;
+        $this->allowance_updated_at = $timestamp;
+        $this->save();
+    }
 }

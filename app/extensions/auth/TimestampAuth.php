@@ -60,7 +60,7 @@ class TimestampAuth extends ActionFilter
         
         $now = time();
         if($now > $timestamp + $this->timeout) {
-            throw new ApiException(ApiException::SYSTEM_REQUEST_TIMEOUT);    
+            throw new ApiException(ApiException::SYSTEM_TIMESTAMP_EXPIRE);
         }
         
         return true;

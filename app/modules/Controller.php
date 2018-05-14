@@ -4,60 +4,87 @@ namespace app\modules;
 
 use Yii;
 use yii\web\Response;
-use yii\filters\auth\CompositeAuth;
-use yii\filters\auth\QueryParamAuth;
+use yii\helpers\ArrayHelper;
 use yii\filters\ContentNegotiator;
-use app\filters\UriTokenization;
+use yii\filters\RateLimiter;  
+use app\extensions\auth\JwtAuth;
+use app\extensions\auth\TimestampAuth;
+use app\extensions\auth\AccessTokenAuth;
 
 abstract class Controller extends \yii\rest\Controller
 {
     public $serializer = [
         'class' => 'yii\rest\Serializer',
-        'collectionEnvelope' => 'result',
+        'collectionEnvelope' => 'list',
     ];
+
+    public $public = false;
+    
+    public $publicActions = [];
+
+    public $rateLimiter = true;
 
     public function behaviors()
     {
-        $behaviors = parent::behaviors();
-        
-        // 权限认证
-        // $behaviors['authenticator'] = [
-        //     'class' => QueryParamAuth::className(),
-        // ];
-
-
-        // $authTokenParam = 'auth_key';
-        // //ContentNegotiator支持响应内容格式处理和语言处理
-        // $behaviors['contentNegotiator'] = [
-        //     'class' => ContentNegotiator::className(),
-        //     'formats' => [
-        //         'text/html' => Response::FORMAT_JSON
-        //     ]
-        // ];
-        // //UriTokeniza过滤器
-        // $behaviors['uriTokenization'] = [
-        //     'class' => UriTokenization::className(),
-        //     'tokenForm' => 'JWT',
-        //     'authTokenParam' => $authTokenParam,
-        //     'except' => [
-        //         "*"
-        //     ],
-        // ];
-        // //授权认证支持列表
-        // $behaviors['authenticator'] = [
-        //     'class' => QueryParamAuth::className(),
-        //     'tokenParam' => $authTokenParam,
-        //     'except' => [
-        //         "*"
-        //     ]
-        // ];
-        // 
+        // $behaviors = parent::behaviors();
 
         // 响应内容格式处理
-        $behaviors['contentNegotiator']['formats'] = [
-            'application/json'          => Response::FORMAT_JSON,
-            'application/javascript'    => Response::FORMAT_JSONP,
+        $behaviors['contentNegotiator'] = [
+            'class' => 'yii\filters\ContentNegotiator',
+            'formats' => [
+                'application/json'       => Response::FORMAT_JSON,
+                'application/javascript' => Response::FORMAT_JSONP,
+            ]
         ];
+
+        // // 动作过滤器
+        // $behaviors['verbFilter'] = [
+        //     'class' => 'yii\filters\VerbFilter',
+        //         'actions' => [
+        //             'index'  => ['GET'],
+        //             'view'   => ['GET'],
+        //             'create' => ['POST'],
+        //             'update' => ['POST'],
+        //             'delete' => ['POST'],
+        //         ],
+        // ];
+
+        $isDebug  = YII_DEBUG && Yii::$app->request->get('__debug__') == 1;
+        if($isDebug) {
+            // 接口调试模式
+            unset($_GET['__debug__']);
+            Yii::$app->request->setBodyParams($_GET);
+        } else {
+            // 参数传递安全验证，防止篡改
+            $behaviors['tokenValidate'] = [
+                'class' => JwtAuth::className(),
+            ];
+
+            // 时间戳验证，防止重放攻击
+            $behaviors['timestampValidate'] = [
+                'class' => TimestampAuth::className(),
+            ];
+
+            // 授权验证（Authentication)
+            $isPublic = $this->public || in_array(Yii::$app->controller->action->id, $this->publicActions);
+            if (!$isPublic) {
+                $behaviors['authValidate'] = [
+                    'class' => AccessTokenAuth::className(),
+                    'optional'  => ['register', 'login'],
+                ];
+            }
+            
+            // 数率限制 (Rate Limiting)
+            // $behaviors['rateLimiter'] = [
+            //     'class' => 'yii\filters\RateLimiter',
+            // ];
+        }
+
         return $behaviors;
+    }
+
+    public function afterAction($action, $result)
+    {
+        return parent::afterAction($action, $result);
     }
 }

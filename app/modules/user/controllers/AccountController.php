@@ -21,16 +21,14 @@ class AccountController extends \app\modules\Controller
     }
 
     public function actionLogout()
+    {    
+        return 'success';
+    }
+
+    public function actionError()
     {
-        // $num = 0;
-        // try {
-        //     echo 1/$num;
-        // } catch (Exception $e){
-        //     echo $e->getMessage();
-        // }
-        
-        // throw new \Exception('退出失败', 100002);
-        
-        return 'suucess';
+        throw new \Exception('系统错误', 100001);
+
+        throw new \yii\web\NotFoundHttpException('系统错误');
     }
 }

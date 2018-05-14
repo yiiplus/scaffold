@@ -35,7 +35,7 @@
         "yiiplus/yii2-desktop": "^2.0.0",
         "sentry/sentry": "^1.8",
         "mito/yii2-sentry": "~1.0.0",
-        "firebase/php-jwt": "^5.0"
+        "firebase/php-jwt": "^5.0.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

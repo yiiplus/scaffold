@@ -11,7 +11,7 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'modules' => [
-        'user' => ['class' => 'app\modules\user\Module'],
+        'user'   => ['class' => 'app\modules\user\Module'],
         'shop'   => ['class' => 'app\modules\shop\Module'],
         'cms'    => ['class' => 'app\modules\cms\Module'],
         'bbs'    => ['class' => 'app\modules\bbs\Module'],
@@ -39,14 +39,14 @@ return [
             'showScriptName' => false,
             'rules' => [
                 [
-                    // 账号信息
                     'class' => 'yii\rest\UrlRule',
+                    'pluralize' => false,
                     'controller' => 'user/account',
                     'extraPatterns' => [
                         'GET login'  => 'login',
                         'GET logout' => 'logout',
+                        'GET error'  => 'error',
                     ],
-                    'pluralize' => false,
                 ],
             ],
         ],
@@ -61,37 +61,23 @@ return [
             ],
             'on beforeSend' => function ($event) {
                 $response = $event->sender;
-
-                if($response->isSuccessful) {
-                    $data = [
-                        'success' => $response->isSuccessful,
-                        'code'    => 0,
-                        'message' => $response->statusText,
-                        'data'  => $response->data,
-                    ];
-                } else {
-                    if(YII_DEBUG) {
-                        $data = [
-                            'success'     => $response->isSuccessful,
-                            'code'        => isset($response->data['code']) ? $response->data['code'] : 100001,
-                            'message'     => isset($response->data['message']) ? $response->data['message'] : '系统错误',
-                            'statusCode'  => $response->statusCode,
-                            'statusText'  => $response->statusText,
-                        ];
+                
+                // 错误信息格式化
+                if(!$response->isSuccessful && !YII_DEBUG) {
+                    $exception = Yii::$app->getErrorHandler()->exception;
+                    if ($exception->getCode() > 100000) {
+                        $response->data = ['data' => $exception->getCode(), 'message' => $exception->getMessage()];
                     } else {
-                        $exception = Yii::$app->getErrorHandler()->exception;
-                        $error_code    = $exception->getCode();
-                        $error_message = $exception->getMessage();
-                        $data = [
-                            'success'     => $response->isSuccessful,
-                            'code'        => $error_code ? $error_code : 100001,
-                            'message'     => $error_message ? $error_message : '系统错误',
-                        ];
-
+                        $response->data = ['data' => 100000, 'message' => '系统未知错误'];
                     }
                 }
 
-                $response->data = $data;
+                // 数据组装
+                $response->data = [
+                    'success' => $response->isSuccessful,
+                    'data' => $response->data,
+                ];
+
                 $response->statusCode = 200;
             },
         ],

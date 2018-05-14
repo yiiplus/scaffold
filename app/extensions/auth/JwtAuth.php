@@ -60,7 +60,7 @@ class JwtAuth extends ActionFilter
                 throw new ApiException(ApiException::SYSTEM_PARAM_ERROR);
             }
         } else {
-            throw new ApiException(ApiException::SYSTEM_ILLEGAL_REQUEST);
+            throw new ApiException(ApiException::SYSTEM_METHOD_ERROR);
         }
         return true;
     }

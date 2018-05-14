@@ -26,7 +26,8 @@ abstract class Controller extends \yii\rest\Controller
 
     public function behaviors()
     {
-        // $behaviors = parent::behaviors();
+        $behaviors = parent::behaviors();
+        unset($behaviors['authenticator'], $behaviors['rateLimiter']);
 
         // 响应内容格式处理
         $behaviors['contentNegotiator'] = [
@@ -36,18 +37,6 @@ abstract class Controller extends \yii\rest\Controller
                 'application/javascript' => Response::FORMAT_JSONP,
             ]
         ];
-
-        // // 动作过滤器
-        // $behaviors['verbFilter'] = [
-        //     'class' => 'yii\filters\VerbFilter',
-        //         'actions' => [
-        //             'index'  => ['GET'],
-        //             'view'   => ['GET'],
-        //             'create' => ['POST'],
-        //             'update' => ['POST'],
-        //             'delete' => ['POST'],
-        //         ],
-        // ];
 
         $isDebug  = YII_DEBUG && Yii::$app->request->get('__debug__') == 1;
         if($isDebug) {
@@ -75,16 +64,25 @@ abstract class Controller extends \yii\rest\Controller
             }
             
             // 数率限制 (Rate Limiting)
-            // $behaviors['rateLimiter'] = [
-            //     'class' => 'yii\filters\RateLimiter',
-            // ];
+             $behaviors['rateLimiter'] = [
+                 'class' => 'yii\filters\RateLimiter',
+             ];
         }
 
         return $behaviors;
     }
 
-    public function afterAction($action, $result)
+    /**
+     * {@inheritdoc}
+     */
+    protected function verbs()
     {
-        return parent::afterAction($action, $result);
+        return [
+            'index' => ['GET', 'HEAD'],
+            'view' => ['GET', 'HEAD'],
+            'create' => ['POST'],
+            'update' => ['PUT', 'PATCH'],
+            'delete' => ['DELETE'],
+        ];
     }
 }

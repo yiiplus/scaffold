@@ -59,8 +59,7 @@ abstract class Controller extends \yii\rest\Controller
 
             // 数率限制 (Rate Limiting)
             $behaviors['rateLimiter'] = [
-                //'class' => 'app\extensions\auth\RateLimiterAuth',
-                'class' => 'yii\filters\RateLimiter',
+                'class' => 'app\extensions\auth\RateLimiterAuth',
                 'enableRateLimitHeaders' => true,
             ];
         }

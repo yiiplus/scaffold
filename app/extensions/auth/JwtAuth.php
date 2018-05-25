@@ -34,43 +34,43 @@ class JwtAuth extends ActionFilter
      */
     public $param = 'data';
 
-    /**
-     * {@inheritdoc}
-     */
     public function beforeAction($action)
     {
-        if(Yii::$app->request->isGet)  {
+        if (Yii::$app->request->isGet) {
             $data = Yii::$app->request->get($this->param, '');
-            if(empty($data)) {
+            if (empty($data)) {
                 throw new ApiException(ApiException::SYSTEM_ILLEGAL_REQUEST);
             }
             try {
-                Yii::$app->request->setQueryParams($this->_decode($data));
+                Yii::$app->request->setQueryParams($this->decode($data));
             } catch (\Exception $e) {
                 throw new ApiException(ApiException::SYSTEM_PARAM_ERROR);
             }
         } elseif (Yii::$app->request->isPost) {
             $data = Yii::$app->request->post($this->param, '');
-            if(empty($data)) {
+            if (empty($data)) {
                 throw new ApiException(ApiException::SYSTEM_ILLEGAL_REQUEST);
             }
             try {
-                Yii::$app->request->setBodyParams($this->_decode($data));
+                Yii::$app->request->setBodyParams($this->decode($data));
             } catch (\Exception $e) {
                 throw new ApiException(ApiException::SYSTEM_PARAM_ERROR);
             }
         } else {
             throw new ApiException(ApiException::SYSTEM_METHOD_ERROR);
         }
+
         return true;
     }
 
     /**
      * 解码
      */
-    private function _decode($data) {
+    private function decode($data)
+    {
         $data = JWT::decode($data, Yii::$app->params['jwt']['key'], Yii::$app->params['jwt']['allowed_algs']);
         $data = ArrayHelper::toArray($data);
+
         return $data;
     }
 }

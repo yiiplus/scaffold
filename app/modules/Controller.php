@@ -33,7 +33,7 @@ abstract class Controller extends \yii\rest\Controller
         ];
 
         $isDebug  = YII_DEBUG && Yii::$app->request->get('__debug__') == 1;
-        if($isDebug) {
+        if ($isDebug) {
             // 接口调试模式
             unset($_GET['__debug__']);
             Yii::$app->request->setBodyParams($_GET);

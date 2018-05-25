@@ -1,8 +1,6 @@
 <?php
 namespace app\controllers;
 
-use Yii;
-
 /**
  * Site controller
  */

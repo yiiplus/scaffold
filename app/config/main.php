@@ -63,7 +63,7 @@ return [
                 $response = $event->sender;
                 
                 // 错误信息格式化
-                if(!$response->isSuccessful && !YII_DEBUG) {
+                if (!$response->isSuccessful && !YII_DEBUG) {
                     $exception = Yii::$app->getErrorHandler()->exception;
                     if ($exception->getCode() > 100000) {
                         $response->data = ['data' => $exception->getCode(), 'message' => $exception->getMessage()];

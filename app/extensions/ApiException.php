@@ -38,11 +38,12 @@ class ApiException extends Exception
         self::SYSTEM_USER_VIP_LIMIT    => '用户请求特殊接口 (%s) 频次超过上限',
     ];
 
-    public function __construct ($code = self::SYSTEM_ERROR, \Exception $previous = null)
+    public function __construct($code = self::SYSTEM_ERROR)
     {
-        if(!isset(self::$messages[$code])) {
+        if (!isset(self::$messages[$code])) {
             $code = self::SYSTEM_ERROR;
         }
-        parent::__construct(self::$messages[$code], $code, $previous);
+
+        parent::__construct(self::$messages[$code], $code);
     }
 }

@@ -26,7 +26,7 @@ use app\extensions\ApiException;
  * @data 2017-03-23 10:56 am
  */
 class TimestampAuth extends ActionFilter
-{   
+{
     /**
      * 时间戳参数
      * @var string
@@ -44,14 +44,14 @@ class TimestampAuth extends ActionFilter
      */
     public function beforeAction($action)
     {
-        if(Yii::$app->request->isGet)  {
+        if (Yii::$app->request->isGet) {
             $timestamp = Yii::$app->request->get($this->param, '');
-            if(empty($timestamp)) {
+            if (empty($timestamp)) {
                 throw new ApiException(ApiException::SYSTEM_TIMESTAMP_NULL);
             }
         } elseif (Yii::$app->request->isPost) {
             $timestamp = Yii::$app->request->post($this->param, '');
-            if(empty($timestamp)) {
+            if (empty($timestamp)) {
                 throw new ApiException(ApiException::SYSTEM_TIMESTAMP_NULL);
             }
         } else {
@@ -59,7 +59,7 @@ class TimestampAuth extends ActionFilter
         }
         
         $now = time();
-        if($now > $timestamp + $this->timeout) {
+        if ($now > $timestamp + $this->timeout) {
             throw new ApiException(ApiException::SYSTEM_TIMESTAMP_EXPIRE);
         }
         

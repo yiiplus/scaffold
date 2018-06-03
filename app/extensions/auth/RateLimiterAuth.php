@@ -23,5 +23,12 @@ use app\extensions\ApiException;
  */
 class RateLimiterAuth extends RateLimiter
 {
+    public function beforeAction($action)
+    {
+        if (!$this->isActive($action)) {
+            return;
+        }
 
+        return parent::beforeAction($action);
+    }
 }

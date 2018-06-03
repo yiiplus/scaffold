@@ -12,18 +12,12 @@ abstract class Controller extends \yii\rest\Controller
         'collectionEnvelope' => 'list',
     ];
 
-    public $public = false;
-    
-    public $publicActions = [];
-
-    public $rateLimiter = true;
-
     public function behaviors()
     {
         $behaviors = parent::behaviors();
+
         unset($behaviors['authenticator'], $behaviors['rateLimiter']);
 
-        // 响应内容格式处理
         $behaviors['contentNegotiator'] = [
             'class' => 'yii\filters\ContentNegotiator',
             'formats' => [
@@ -32,39 +26,44 @@ abstract class Controller extends \yii\rest\Controller
             ]
         ];
 
-        $isDebug  = YII_DEBUG && Yii::$app->request->get('__debug__') == 1;
-        if ($isDebug) {
-            // 接口调试模式
-            unset($_GET['__debug__']);
-            Yii::$app->request->setBodyParams($_GET);
-        } else {
-            // 参数传递安全验证，防止篡改
-            $behaviors['tokenValidate'] = [
-                'class' => 'app\extensions\auth\JwtAuth',
-            ];
+        $behaviors['tokenValidate'] = [
+            'class' => 'app\extensions\auth\JwtAuth',
+            'except' => $this->isDebug ? ['*'] : []
+        ];
 
-            // 时间戳验证，防止重放攻击
-            $behaviors['timestampValidate'] = [
-                'class' => 'app\extensions\auth\TimestampAuth',
-            ];
+        $behaviors['timestampValidate'] = [
+            'class' => 'app\extensions\auth\TimestampAuth',
+            'except' => $this->isDebug ? ['*'] : []
+        ];
 
-            // 授权验证（Authentication)
-            $isPublic = $this->public || in_array(Yii::$app->controller->action->id, $this->publicActions);
-            if (!$isPublic) {
-                $behaviors['authValidate'] = [
-                    'class' => 'app\extensions\auth\AccessTokenAuth',
-                    'optional'  => ['register', 'login'],
-                ];
-            }
+        $behaviors['authValidate'] = [
+            'class' => 'app\extensions\auth\AccessTokenAuth',
+            'except'  => $this->isDebug ? ['*'] : []
+        ];
 
-            // 数率限制 (Rate Limiting)
-            $behaviors['rateLimiter'] = [
-                'class' => 'app\extensions\auth\RateLimiterAuth',
-                'enableRateLimitHeaders' => true,
-            ];
-        }
+        $behaviors['rateLimiter'] = [
+            'class' => 'app\extensions\auth\RateLimiterAuth',
+            'enableRateLimitHeaders' => true,
+            'except'  => $this->isDebug ? ['*'] : []
+        ];
 
         return $behaviors;
+    }
+
+    /**
+     * 当在开发环境下使用GET方式传入的`__debug__`参数为1时，isDebug属性为true
+     * 此时大部分behaviors将不会执行 e.g:
+     * ```php
+     *  $behaviors['authValidate'] = [
+     *      'class' => 'app\extensions\auth\AccessTokenAuth',
+     *      'except'  => $this->isDebug ? ['*'] : [] //except属性对isDebug进行支持
+     *  ];
+     * ```
+     * @return bool
+     */
+    public function getIsDebug()
+    {
+        return YII_DEBUG && Yii::$app->request->get('__debug__') == 1;
     }
 
     /**

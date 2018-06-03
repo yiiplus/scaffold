@@ -36,6 +36,10 @@ class JwtAuth extends ActionFilter
 
     public function beforeAction($action)
     {
+        if (!$this->isActive($action)) {
+            return;
+        }
+
         if (Yii::$app->request->isGet) {
             $data = Yii::$app->request->get($this->param, '');
             if (empty($data)) {

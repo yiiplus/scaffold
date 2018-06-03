@@ -44,6 +44,10 @@ class TimestampAuth extends ActionFilter
      */
     public function beforeAction($action)
     {
+        if (!$this->isActive($action)) {
+            return;
+        }
+
         if (Yii::$app->request->isGet) {
             $timestamp = Yii::$app->request->get($this->param, '');
             if (empty($timestamp)) {

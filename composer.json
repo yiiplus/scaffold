@@ -42,7 +42,8 @@
         "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-faker": "~2.0.0",
         "codeception/base": "^2.2.3",
-        "codeception/verify": "~0.3.1"
+        "codeception/verify": "~0.3.1",
+        "squizlabs/php_codesniffer": ">=2.3.1 <3.0"
     },
     "config": {
         "process-timeout": 3600
@@ -56,6 +57,7 @@
     "scripts": {
         "dev:build": [
             "cp docker/project/dev/docker-compose.yaml docker-compose.yaml",
+            "cp pre-commit .git/hooks/",
             "@docker:start",
             "docker-compose exec -T www composer install -vvv",
             "docker-compose exec -T www ./init --env=Development --overwrite=y",

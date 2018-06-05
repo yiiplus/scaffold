@@ -61,7 +61,12 @@ return [
             ],
             'on beforeSend' => function ($event) {
                 $response = $event->sender;
-                
+
+                // gii处理
+                if (substr(Yii::$app->requestedRoute, '0', '4') == 'gii/' && YII_ENV_DEV) {
+                    return;
+                }
+
                 // 错误信息格式化
                 if (!$response->isSuccessful && !YII_DEBUG) {
                     $exception = Yii::$app->getErrorHandler()->exception;
@@ -76,6 +81,7 @@ return [
                 $response->data = [
                     'success' => $response->isSuccessful,
                     'data' => $response->data,
+                    'timestamp' => time(),
                 ];
 
                 $response->statusCode = 200;

@@ -23,18 +23,20 @@ use app\extensions\ApiException;
  * ```
  *
  * @author hongbin.chen <87003637@qq.com>
- * @data 2017-03-23 10:56 am
+ * @data   2017-03-23 10:56 am
  */
 class TimestampAuth extends ActionFilter
 {
     /**
      * 时间戳参数
+     *
      * @var string
      */
     public $param = 'timestamp';
 
     /**
      * 请求时长 (秒)
+     *
      * @var integer
      */
     public $timeout = 30;

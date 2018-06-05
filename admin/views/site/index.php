@@ -75,7 +75,7 @@ $this->title = '仪表盘 Dashboard';
                 <tbody>
                   <tr>
                     <td>Yii版本</td>
-                    <td><?= Yii::getVersion() ?></td>
+                    <td><?php echo Yii::getVersion() ?></td>
                     <td>Composer扩展</td>
                     <td>
                       <a href="https://github.com/yiiplus/yii2-desktop" target="_blank">yiiplus/yii2-desktop</a>
@@ -84,21 +84,21 @@ $this->title = '仪表盘 Dashboard';
                   </tr>
                   <tr>
                     <td>服务器操作系统</td>
-                    <td><?= php_uname('s') ?></td>
+                    <td><?php echo php_uname('s') ?></td>
                     <td>WEB运行环境</td>
-                    <td><?= php_sapi_name() ?></td>
+                    <td><?php echo php_sapi_name() ?></td>
                   </tr>
                   <tr>
                     <td>MySQL数据库版本</td>
-                    <td><?= Yii::$app->db->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION) ?></td>
+                    <td><?php echo Yii::$app->db->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION) ?></td>
                     <td>运行PHP版本</td>
-                    <td><?= phpversion() ?></td>
+                    <td><?php echo phpversion() ?></td>
                   </tr>
                   <tr>
                     <td>上传大小限制</td>
-                    <td><?= ini_get('upload_max_filesize') ?></td>
+                    <td><?php echo ini_get('upload_max_filesize') ?></td>
                     <td>POST大小限制</td>
-                    <td><?= ini_get('post_max_size') ?></td>
+                    <td><?php echo ini_get('post_max_size') ?></td>
                   </tr>
                 </tbody>
               </table>
@@ -115,7 +115,7 @@ $this->title = '仪表盘 Dashboard';
                 <tbody>
                   <tr>
                     <td>项目名称</td>
-                    <td><?= Yii::$app->name ?></td>
+                    <td><?php echo Yii::$app->name ?></td>
                     <td>产品DEMO体验</td>
                     <td><a href="http://demo.yiiplus.com" target="_blank">http://demo.yiiplus.com</a></td>
                   </tr>

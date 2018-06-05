@@ -59,6 +59,7 @@ abstract class Controller extends \yii\rest\Controller
      *      'except'  => $this->isDebug ? ['*'] : [] //except属性对isDebug进行支持
      *  ];
      * ```
+     *
      * @return bool
      */
     public function getIsDebug()

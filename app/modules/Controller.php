@@ -1,10 +1,32 @@
 <?php
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
 
 namespace app\modules;
 
 use Yii;
 use yii\web\Response;
 
+/**
+ * BaseController
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
 abstract class Controller extends \yii\rest\Controller
 {
     public $serializer = [
@@ -12,6 +34,11 @@ abstract class Controller extends \yii\rest\Controller
         'collectionEnvelope' => 'list',
     ];
 
+    /**
+     * 行为
+     *
+     * @return array
+     */
     public function behaviors()
     {
         $behaviors = parent::behaviors();
@@ -68,7 +95,9 @@ abstract class Controller extends \yii\rest\Controller
     }
 
     /**
-     * {@inheritdoc}
+     * 动词定义
+     *
+     * @return array
      */
     protected function verbs()
     {

@@ -1,4 +1,17 @@
 <?php
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
+
 namespace common\models;
 
 use Yii;
@@ -21,6 +34,13 @@ use yii\filters\RateLimitInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
  */
 class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 {
@@ -29,7 +49,9 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 
 
     /**
-     * @inheritdoc
+     * 用户表名
+     *
+     * @return string 表名
      */
     public static function tableName()
     {
@@ -37,7 +59,9 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * @inheritdoc
+     * Behaviors
+     *
+     * @return array
      */
     public function behaviors()
     {
@@ -47,7 +71,9 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * @inheritdoc
+     * Rules
+     *
+     * @return array
      */
     public function rules()
     {
@@ -58,7 +84,11 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * @inheritdoc
+     * Find Identity
+     *
+     * @param int|string $id 用户ID
+     *
+     * @return null|static
      */
     public static function findIdentity($id)
     {
@@ -66,7 +96,12 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * @inheritdoc
+     * Find Identity By AccessToken
+     *
+     * @param mixed $token 令牌
+     * @param null  $type  类型
+     *
+     * @return null|static
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
@@ -76,7 +111,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     /**
      * 生成access_token
      *
-     * @return [type] [description]
+     * @return void
      */
     public function generateAccessToken()
     {
@@ -86,7 +121,8 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     /**
      * Finds user by username
      *
-     * @param string $username
+     * @param string $username 用户名
+     *
      * @return static|null
      */
     public static function findByUsername($username)
@@ -98,6 +134,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      * Finds user by password reset token
      *
      * @param string $token password reset token
+     *
      * @return static|null
      */
     public static function findByPasswordResetToken($token)
@@ -113,6 +150,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      * Finds out if password reset token is valid
      *
      * @param string $token password reset token
+     *
      * @return bool
      */
     public static function isPasswordResetTokenValid($token)
@@ -127,7 +165,9 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * @inheritdoc
+     * 获取主键ID
+     *
+     * @return mixed
      */
     public function getId()
     {
@@ -135,7 +175,9 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * @inheritdoc
+     * 获取 auth key
+     *
+     * @return string
      */
     public function getAuthKey()
     {
@@ -143,7 +185,11 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * @inheritdoc
+     * 验证 auth key
+     *
+     * @param string $authKey 令牌
+     *
+     * @return bool
      */
     public function validateAuthKey($authKey)
     {
@@ -154,6 +200,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      * Validates password
      *
      * @param string $password password to validate
+     *
      * @return bool if password provided is valid for current user
      */
     public function validatePassword($password)
@@ -164,7 +211,9 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     /**
      * Generates password hash from password and sets it to the model
      *
-     * @param string $password
+     * @param string $password 密码
+     *
+     * @return void
      */
     public function setPassword($password)
     {
@@ -173,6 +222,8 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 
     /**
      * Generates "remember me" authentication key
+     *
+     * @return void
      */
     public function generateAuthKey()
     {
@@ -181,6 +232,8 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 
     /**
      * Generates new password reset token
+     *
+     * @return void
      */
     public function generatePasswordResetToken()
     {
@@ -189,6 +242,8 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 
     /**
      * Removes password reset token
+     *
+     * @return void
      */
     public function removePasswordResetToken()
     {

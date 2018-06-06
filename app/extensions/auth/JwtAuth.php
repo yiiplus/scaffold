@@ -1,4 +1,16 @@
 <?php
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
 
 namespace app\extensions\auth;
 
@@ -24,16 +36,25 @@ use app\extensions\ApiException;
  * }
  * ```
  *
- * @author hongbin.chen <87003637@qq.com>
- * @data   2017-03-23 10:56 am
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
  */
 class JwtAuth extends ActionFilter
 {
-    /**
-     * @var 参数
-     */
     public $param = 'data';
 
+    /**
+     * 前置动作
+     *
+     * @param \yii\base\Action $action 动作
+     *
+     * @return bool|void
+     * @throws ApiException
+     */
     public function beforeAction($action)
     {
         if (!$this->isActive($action)) {
@@ -46,7 +67,7 @@ class JwtAuth extends ActionFilter
                 throw new ApiException(ApiException::SYSTEM_ILLEGAL_REQUEST);
             }
             try {
-                Yii::$app->request->setQueryParams($this->decode($data));
+                Yii::$app->request->setQueryParams($this->_decode($data));
             } catch (\Exception $e) {
                 throw new ApiException(ApiException::SYSTEM_PARAM_ERROR);
             }
@@ -56,7 +77,7 @@ class JwtAuth extends ActionFilter
                 throw new ApiException(ApiException::SYSTEM_ILLEGAL_REQUEST);
             }
             try {
-                Yii::$app->request->setBodyParams($this->decode($data));
+                Yii::$app->request->setBodyParams($this->_decode($data));
             } catch (\Exception $e) {
                 throw new ApiException(ApiException::SYSTEM_PARAM_ERROR);
             }
@@ -69,8 +90,12 @@ class JwtAuth extends ActionFilter
 
     /**
      * 解码
+     *
+     * @param string $data 数据
+     *
+     * @return array|object
      */
-    private function decode($data)
+    private function _decode($data)
     {
         $data = JWT::decode($data, Yii::$app->params['jwt']['key'], Yii::$app->params['jwt']['allowed_algs']);
         $data = ArrayHelper::toArray($data);

@@ -1,4 +1,17 @@
 <?php
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
+
 namespace app\extensions\auth;
 
 use Yii;
@@ -21,17 +34,24 @@ use app\extensions\ApiException;
  * }
  * ```
  *
- * @author hongbin.chen <87003637@qq.com>
- * @data   2017-03-23 10:56 am
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
  */
 class AccessTokenAuth extends AuthMethod
 {
-
-    /**
-     * @var string the parameter name for passing the access token
-     */
     public $tokenParam = 'access-token';
 
+    /**
+     * 前置动作
+     *
+     * @param \yii\base\Action $action 动作
+     *
+     * @return void
+     */
     public function beforeAction($action)
     {
         if (!$this->isActive($action)) {
@@ -60,7 +80,14 @@ class AccessTokenAuth extends AuthMethod
     }
 
     /**
-     * {@inheritdoc}
+     * 授权检查
+     *
+     * @param \yii\web\User     $user     用户
+     * @param \yii\web\Request  $request  请求
+     * @param \yii\web\Response $response 响应
+     *
+     * @return null|\yii\web\IdentityInterface
+     * @throws ApiException
      */
     public function authenticate($user, $request, $response)
     {

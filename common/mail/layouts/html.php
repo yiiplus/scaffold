@@ -1,9 +1,18 @@
 <?php
-use yii\helpers\Html;
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
 
-/* @var $this \yii\web\View view component instance */
-/* @var $message \yii\mail\MessageInterface the message being composed */
-/* @var $content string main view render result */
+use yii\helpers\Html;
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

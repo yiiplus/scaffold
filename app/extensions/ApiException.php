@@ -1,27 +1,49 @@
 <?php
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
+
 namespace app\extensions;
 
-use Yii;
 use yii\base\Exception;
 
+/**
+ * ApiException 接口异常对照
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
 class ApiException extends Exception
 {
-    public const SYSTEM_ERROR              = 100001;
-    public const SYSTEM_PARAM_ERROR        = 100002;
-    public const SYSTEM_ILLEGAL_REQUEST    = 100003;
-    public const SYSTEM_REQUEST_TIMEOUT    = 100004;
-    public const SYSTEM_TIMESTAMP_NULL     = 100005;
-    public const SYSTEM_TIMESTAMP_EXPIRE   = 100006;
-    public const SYSTEM_ACCESS_TOKEN_NULL  = 100007;
-    public const SYSTEM_UNAUTHORIZED       = 100008;
-    public const SYSTEM_NOT_FOUND          = 100009;
-    public const SYSTEM_METHOD_ERROR       = 100010;
-    public const SYSTEM_IP_ILLEGAL         = 100011;
-    public const SYSTEM_IP_LIMIT           = 100012;
-    public const SYSTEM_USER_LIMIT         = 100013;
-    public const SYSTEM_USER_VIP_LIMIT     = 100014;
+    const SYSTEM_ERROR              = 100001;
+    const SYSTEM_PARAM_ERROR        = 100002;
+    const SYSTEM_ILLEGAL_REQUEST    = 100003;
+    const SYSTEM_REQUEST_TIMEOUT    = 100004;
+    const SYSTEM_TIMESTAMP_NULL     = 100005;
+    const SYSTEM_TIMESTAMP_EXPIRE   = 100006;
+    const SYSTEM_ACCESS_TOKEN_NULL  = 100007;
+    const SYSTEM_UNAUTHORIZED       = 100008;
+    const SYSTEM_NOT_FOUND          = 100009;
+    const SYSTEM_METHOD_ERROR       = 100010;
+    const SYSTEM_IP_ILLEGAL         = 100011;
+    const SYSTEM_IP_LIMIT           = 100012;
+    const SYSTEM_USER_LIMIT         = 100013;
+    const SYSTEM_USER_VIP_LIMIT     = 100014;
 
-    private static $messages = [
+    private $_messages = [
         self::SYSTEM_ERROR             => '系统错误',
         self::SYSTEM_PARAM_ERROR       => '参数错误',
         self::SYSTEM_ILLEGAL_REQUEST   => '非法请求',
@@ -38,12 +60,17 @@ class ApiException extends Exception
         self::SYSTEM_USER_VIP_LIMIT    => '用户请求特殊接口 (%s) 频次超过上限',
     ];
 
+    /**
+     * ApiException constructor
+     *
+     * @param int $code 错误编码
+     */
     public function __construct($code = self::SYSTEM_ERROR)
     {
-        if (!isset(self::$messages[$code])) {
+        if (!isset($this->_messages[$code])) {
             $code = self::SYSTEM_ERROR;
         }
 
-        parent::__construct(self::$messages[$code], $code);
+        parent::__construct($this->_messages[$code], $code);
     }
 }

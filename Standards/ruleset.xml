@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="Standards">
-    <description>Yii 2 Web Application Framework Coding Standard</description>
+    <description>Coding Standard</description>
+
+    <rule ref="PEAR">
+        <exclude name="PSR2.Methods.MethodDeclaration"/>
+    </rule>
 
     <rule ref="PSR2">
         <!-- Property names MUST start with an initial underscore if they are private. -->

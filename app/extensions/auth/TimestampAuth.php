@@ -1,4 +1,16 @@
 <?php
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
 
 namespace app\extensions\auth;
 
@@ -22,8 +34,12 @@ use app\extensions\ApiException;
  * }
  * ```
  *
- * @author hongbin.chen <87003637@qq.com>
- * @data   2017-03-23 10:56 am
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
  */
 class TimestampAuth extends ActionFilter
 {
@@ -40,9 +56,13 @@ class TimestampAuth extends ActionFilter
      * @var integer
      */
     public $timeout = 30;
-    
+
     /**
-     * {@inheritdoc}
+     * 前置动作
+     *
+     * @param \yii\base\Action $action 动作
+     *
+     * @return void
      */
     public function beforeAction($action)
     {

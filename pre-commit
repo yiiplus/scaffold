@@ -7,7 +7,7 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
-./vendor/bin/phpcs --extensions=php --standard=Standards console/ admin/ app/ pc/ h5/
+./vendor/bin/phpcs --extensions=php --standard=Standards admin/ console/ pc/ h5/ environments/ app/ common/
 exit $?
 
 if git rev-parse --verify HEAD >/dev/null 2>&1

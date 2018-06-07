@@ -55,12 +55,18 @@
         }
     },
     "scripts": {
-        "dev:build": [
-            "cp docker/project/dev/docker-compose.yaml docker-compose.yaml",
-            "cp pre-commit .git/hooks/",
+        "dev:install": [
+            "./install --env=Development --overwrite=y",
             "@docker:start",
             "docker-compose exec -T www composer install -vvv",
             "docker-compose exec -T www ./init --env=Development --overwrite=y",
+            "@fis3:build",
+            "docker-compose ps"
+        ],
+        "dev:update": [
+            "@docker:cleanup",
+            "@docker:start",
+            "docker-compose exec -T www composer update -vvv",
             "@fis3:build",
             "docker-compose ps"
         ],

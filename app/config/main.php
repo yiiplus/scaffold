@@ -84,9 +84,9 @@ return [
                 if (!$response->isSuccessful && !YII_DEBUG) {
                     $exception = Yii::$app->getErrorHandler()->exception;
                     if ($exception->getCode() > 100000) {
-                        $response->data = ['data' => $exception->getCode(), 'message' => $exception->getMessage()];
+                        $response->data = ['error_code' => $exception->getCode(), 'message' => $exception->getMessage()];
                     } else {
-                        $response->data = ['data' => 100000, 'message' => '系统未知错误'];
+                        $response->data = ['error_code' => 100000, 'message' => '系统未知错误'];
                     }
                 }
 

@@ -77,6 +77,9 @@ foreach ($files as $file) {
     }
 }
 
+// Git钩子：语法检查
+copyFile($root, 'pre-commit', '.git/hooks/pre-commit', $all, $params);
+
 $callbacks = ['setCookieValidationKey', 'setWritable', 'setExecutable', 'createSymlink'];
 foreach ($callbacks as $callback) {
     if (!empty($env[$callback])) {

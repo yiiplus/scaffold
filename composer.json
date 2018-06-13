@@ -56,10 +56,9 @@
     },
     "scripts": {
         "dev:install": [
-            "php install --env=Development --overwrite=y",
+            "php init --env=Development --overwrite=y",
+            "composer install -vvv",
             "@docker:start",
-            "docker-compose exec -T www composer install -vvv",
-            "docker-compose exec -T www ./init --env=Development --overwrite=y",
             "@fis3:build",
             "docker-compose ps"
         ],

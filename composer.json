@@ -63,9 +63,9 @@
             "docker-compose ps"
         ],
         "dev:update": [
+            "composer update -vvv",
             "@docker:cleanup",
             "@docker:start",
-            "docker-compose exec -T www composer update -vvv",
             "@fis3:build",
             "docker-compose ps"
         ],

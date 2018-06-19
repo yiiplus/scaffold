@@ -108,7 +108,7 @@ environments/            包含基于环境的覆盖
     #            "github.com": "<token>"
     #        }
     #    }
-    composer run-script dev:build
+    composer run-script dev:install
     
     # 初始化数据库
     docker exec -it mysql mysql --default-character-set=utf8 -uroot -p -e 'source /schema-mysql.sql'

@@ -12,7 +12,7 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace app\extensions;
+namespace app\base;
 
 use yii\base\Exception;
 

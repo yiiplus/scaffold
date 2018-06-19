@@ -12,11 +12,11 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace app\extensions\auth;
+namespace app\filters\auth;
 
 use Yii;
 use yii\base\ActionFilter;
-use app\extensions\ApiException;
+use app\base\ApiException;
 
 /**
  * TimestampAuth

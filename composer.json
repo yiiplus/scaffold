@@ -57,7 +57,7 @@
     "scripts": {
         "dev:install": [
             "php init --env=Development --overwrite=y",
-            "composer install -vvv",
+
             "@docker:start",
             "@fis3:build",
             "docker-compose ps"

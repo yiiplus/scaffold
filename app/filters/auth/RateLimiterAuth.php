@@ -12,11 +12,11 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace app\extensions\auth;
+namespace app\filters\auth;
 
 use Yii;
 use yii\filters\RateLimiter;
-use app\extensions\ApiException;
+use app\base\ApiException;
 
 /**
  * RateLimiterAuth
@@ -28,7 +28,7 @@ use app\extensions\ApiException;
  * {
  *      return [
  *          'rateLimiter' => [
- *              'class' => 'app\extensions\auth\RateLimiterAuth',
+ *              'class' => RateLimiterAuth::className(),
  *          ]
  *      ];
  * }

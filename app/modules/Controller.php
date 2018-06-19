@@ -54,22 +54,22 @@ abstract class Controller extends \yii\rest\Controller
         ];
 
         $behaviors['tokenValidate'] = [
-            'class' => 'app\extensions\auth\JwtAuth',
+            'class' => 'app\filters\auth\JwtAuth',
             'except' => $this->isDebug ? ['*'] : []
         ];
 
         $behaviors['timestampValidate'] = [
-            'class' => 'app\extensions\auth\TimestampAuth',
+            'class' => 'app\filters\auth\TimestampAuth',
             'except' => $this->isDebug ? ['*'] : []
         ];
 
         $behaviors['authValidate'] = [
-            'class' => 'app\extensions\auth\AccessTokenAuth',
+            'class' => 'app\filters\auth\AccessTokenAuth',
             'except'  => $this->isDebug ? ['*'] : []
         ];
 
         $behaviors['rateLimiter'] = [
-            'class' => 'app\extensions\auth\RateLimiterAuth',
+            'class' => 'app\filters\auth\RateLimiterAuth',
             'enableRateLimitHeaders' => true,
             'except'  => $this->isDebug ? ['*'] : []
         ];

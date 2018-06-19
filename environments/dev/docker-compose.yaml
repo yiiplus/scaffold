@@ -1,7 +1,6 @@
 version: '2'
 
 services:
-
     www:
         container_name: www
         build: ./docker/service/php7.1_openresty
@@ -18,17 +17,8 @@ services:
         links:
             - mysql:mysql
             - redis:redis
-
-    fis3:
-        container_name: fis3
-        build: ./docker/service/fis3
-        restart: always
-        ports:
-            - "8080:8080"
-        volumes:
-            - ./:/www
-        working_dir: /www
-
+            - fis3:fis3
+            - phpmyadmin:phpmyadmin
     mysql:
         container_name: mysql
         image: daocloud.io/library/mysql:5.6
@@ -43,7 +33,6 @@ services:
         environment:
             - MYSQL_ROOT_PASSWORD=root
         restart: always
-
     redis:
         container_name: redis
         image: daocloud.io/library/redis
@@ -55,12 +44,20 @@ services:
         volumes:
           - ./docker/project/dev/var_lib_redis:/data
         command: redis-server --appendonly yes
-
+    fis3:
+        container_name: fis3
+        build: ./docker/service/fis3
+        restart: always
+        expose:
+            - "8080"
+        volumes:
+            - ./:/www
+        working_dir: /www
     phpmyadmin:
         container_name: phpmyadmin
         image: daocloud.io/daocloud/phpmyadmin
-        ports:
-            - '8081:80'
+        expose:
+            - '80'
         environment:
             - PMA_ARBITRARY=1
             - PMA_HOST=mysql

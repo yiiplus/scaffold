@@ -29,17 +29,17 @@ use yii\behaviors\TimestampBehavior;
 class ActiveRecord extends \yii\db\ActiveRecord
 {
     /**
-     * NOT_DELETED是删除状态，它表示这条数据未被删除
+     * 未删除
      */
-    const NOT_DELETED = 0;
+    const UNDELETED = 0;
 
     /**
-     * ACTIVE_DELETE是删除状态，它表示这条数据被主动删除
+     * 前端用户主动删除
      */
-    const ACTIVE_DELETE = 1;
+    const FRONTEND_DELETE = 1;
 
     /**
-     * BACKGROUND_DELETE是删除状态，它表示这台数据被后台删除
+     * 运营后台被动删除
      */
     const BACKGROUND_DELETE = 2;
 

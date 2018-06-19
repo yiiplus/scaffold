@@ -4,6 +4,7 @@
 
     <rule ref="PEAR">
         <exclude name="PSR2.Methods.MethodDeclaration"/>
+        <exclude name="PEAR.WhiteSpace.ScopeIndent"/>
     </rule>
 
     <rule ref="PSR2">

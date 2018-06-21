@@ -231,3 +231,24 @@ INSERT INTO `admin_menu` VALUES ('6', '访问控制', '2', null, '4', '{"icon":"
 INSERT INTO `admin_menu` VALUES ('7', '路由列表', '6', '/admin/route/index', '61', '{"icon":"circle"}');
 INSERT INTO `admin_menu` VALUES ('8', '规则列表', '6', '/admin/rule/index', '62', '{"icon":"circle"}');
 INSERT INTO `admin_menu` VALUES ('9', '权限列表', '6', '/admin/permission/index', '63', '{"icon":"circle"}');
+
+
+-- ----------------------------
+-- 用户主表
+-- ----------------------------
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `auth_key` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `password_hash` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `password_reset_token` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `status` smallint(6) NOT NULL DEFAULT '10',
+  `created_at` int(11) NOT NULL,
+  `updated_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `password_reset_token` (`password_reset_token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
+

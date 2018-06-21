@@ -108,19 +108,19 @@ environments/            包含基于环境的覆盖
     #            "github.com": "<token>"
     #        }
     #    }
-    composer run-script dev:build
+    composer run-script dev:install
     
     # 初始化数据库
     docker exec -it mysql mysql --default-character-set=utf8 -uroot -p -e 'source /schema-mysql.sql'
     ```    
 
 - 访问地址
-    - Admin: http://admin.scaffold.local 用户名:webmaster 密码:111111
+    - Admin: http://admin.scaffold.local   用户名:webmaster 密码:111111
     - PC: http://www.scaffold.local
     - H5: http://h5.scaffold.local
     - App: http://app.scaffold.local
-    - FIS3 http://scaffold.local:8080
-    - phpMyAdmin http://scaffold.local:8081  服务器:mysql 用户名:root 密码:root
+    - FIS3: http://fis3.scaffold.local
+    - phpMyAdmin: http://pma.scaffold.local 服务器:mysql 用户名:root 密码:root
 
 ## [文档中心](docs/README.md)
 - [入门学习](docs/quickstart.md)

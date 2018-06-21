@@ -42,9 +42,11 @@ var define;
             var script = document.createElement('script');
             if (onerror) {
                 (function (script, id) {
-                    var tid = setTimeout(function () {
-                        onerror(id);
-                    }, require.timeout);
+                    var tid = setTimeout(
+                        function () {
+                            onerror(id);
+                        }, require.timeout
+                    );
 
                     script.onerror = function () {
                         clearTimeout(tid);
@@ -97,10 +99,12 @@ var define;
                 url = res.url || res.uri || id;
             }
 
-            queues.push({
-                id: id,
-                url: url
-            });
+            queues.push(
+                {
+                    id: id,
+                    url: url
+                }
+            );
         }
 
         createScripts(queues, onerror);
@@ -217,9 +221,11 @@ var define;
     };
 
     require.ensure = function (names, callback) {
-        require.async(names, function () {
-            callback && callback.call(this, require);
-        });
+        require.async(
+            names, function () {
+                callback && callback.call(this, require);
+            }
+        );
     };
 
     require.resourceMap = function (obj) {

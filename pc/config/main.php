@@ -1,4 +1,17 @@
 <?php
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -7,7 +20,7 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-pc',
+    'id' => 'www',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'pc\controllers',
     'bootstrap' => ['log'],
@@ -22,8 +35,7 @@ return [
             'identityCookie' => ['name' => '_identity-pc', 'httpOnly' => true],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the pc
-            'name' => 'advanced-pc',
+            'name' => '_session-pc',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

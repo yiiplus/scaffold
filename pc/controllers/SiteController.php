@@ -1,17 +1,35 @@
 <?php
-namespace pc\controllers;
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
 
-use Yii;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
+namespace pc\controllers;
 
 /**
  * Site controller
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
  */
-class SiteController extends BaseController
+class SiteController extends Controller
 {
     /**
-     * @inheritdoc
+     * 动作
+     *
+     * @return array 动作
      */
     public function actions()
     {
@@ -25,7 +43,7 @@ class SiteController extends BaseController
     /**
      * Displays homepage.
      *
-     * @return string
+     * @return string 首页
      */
     public function actionIndex()
     {

@@ -1,6 +1,18 @@
 <?php
 /**
- * 
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
+
+/**
  * The manifest of files that are local to specific environment.
  * This file returns a list of environments that the application
  * may be installed under. The returned data must be in the following

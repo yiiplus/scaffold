@@ -1,14 +1,21 @@
 <?php
+/**
+ * 脚手架
+ *
+ * PHP version 7
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <87003637@qq.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
+ */
 
 use yii\helpers\Html;
 
-/** @var \yii\web\View $this view component instance */
-/** @var \yii\mail\MessageInterface $message the message being composed */
-/** @var string $content main view render result */
-?>
-
-<?php $this->beginPage() ?>
-<?php $this->beginBody() ?>
-<?= $content ?>
-<?php $this->endBody() ?>
-<?php $this->endPage() ?>
+$this->beginPage();
+    $this->beginBody();
+        echo $content;
+    $this->endBody();
+$this->endPage();

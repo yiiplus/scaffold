@@ -35,14 +35,15 @@
         "yiiplus/yii2-desktop": "^2.0.0",
         "sentry/sentry": "^1.8",
         "mito/yii2-sentry": "~1.0.0",
-        "firebase/php-jwt": "^5.0"
+        "firebase/php-jwt": "^5.0.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
         "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-faker": "~2.0.0",
         "codeception/base": "^2.2.3",
-        "codeception/verify": "~0.3.1"
+        "codeception/verify": "~0.3.1",
+        "squizlabs/php_codesniffer": ">=2.3.1 <3.0"
     },
     "config": {
         "process-timeout": 3600
@@ -54,11 +55,17 @@
         }
     },
     "scripts": {
-        "dev:build": [
-            "cp docker/project/dev/docker-compose.yaml docker-compose.yaml",
+        "dev:install": [
+            "php init --env=Development --overwrite=y",
+
             "@docker:start",
-            "docker-compose exec -T www composer install -vvv",
-            "docker-compose exec -T www ./init --env=Development --overwrite=y",
+            "@fis3:build",
+            "docker-compose ps"
+        ],
+        "dev:update": [
+            "composer update -vvv",
+            "@docker:cleanup",
+            "@docker:start",
             "@fis3:build",
             "docker-compose ps"
         ],

@@ -16,4 +16,21 @@ return [
     'adminEmail' => 'admin@example.com',
     'supportEmail' => 'support@example.com',
     'user.passwordResetTokenExpire' => 3600,
+
+
+    // 缓存对照
+    // $cacheSchema = Yii::$app->params['cacheSchema']['userInfo'];
+    // $data = Yii::$app->cache->get($cacheSchema['prefix'] . $uid);
+    // if ($data === false) {
+    //    $data = 'HelloWorld' . time();
+    //    $cacheSchema = Yii::$app->params['cacheSchema']['userInfo'];
+    //    Yii::$app->cache->set($cacheSchema['prefix'] . $uid, $data, $cacheSchema['expire']);
+    // }
+    'cacheSchema' => [
+        // 用户基本信息
+        'userInfo' => [
+            'prefix' => 'U_INFO_', // U_INFO_{$uid}
+            'expire' => 5, // 过期时间5秒
+        ],
+    ],
 ];

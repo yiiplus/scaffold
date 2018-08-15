@@ -9,7 +9,7 @@
 ## Git工作流
 
 分支模型采用 Github flow工作流程，发布方式采用持续集成。它只有一个长期分支，就是master，因此用起来非常简单。官方推荐的流程如下：
-![](media/15342999793615.png)
+![](_media/15342999793615.png)
 
 * 第一步：根据需求，从master拉出新分支。
 * 第二步：功能分支合并进master分支，必须通过Pull Request（Gitlab里面叫做 Merge Request）。

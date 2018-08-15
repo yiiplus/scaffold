@@ -47,15 +47,32 @@ $ git commit --verbose #git commit 命令的verbose参数，会列出 diff 的�
 提交commit时，必须给出完整扼要的提交信息，下面是一个范本。
 
 ```bash
-Present-tense summary under 50 characters
+fix(view): Present-tense summary under 50 characters
 
 * More information about commit (under 72 characters).
 * More information about commit (under 72 characters).
 
-http://project.management-system.com/ticket/123
+http://project.example.com/ticket/123
+
+########## 第一行提交信息规范 ##########
+# <type>(<scope>): <subject>
+# type:
+# 1. feat: 新功能 (feature)
+# 2. fix: 修复bug
+# 3. docs: 文档 (documentation)
+# 4. style: 格式 (不影响代码运行的变动)
+# 5. refactor: 重构 (即不是新增功能，也不是修改bug的代码变动)
+# 6. test: 增加测试
+# 7. chore: 构建过程或者辅助工具的变动
+#
+# scope:
+# 用于说明commit影响的范围，比如数据层、控制层、视图层等等，视项目不同而不同。
+#
+# subject:
+# 是commit目的的简短描述，不超过50个字符。
+# 1. 已动词开头，使用第一人称现在时。
+# 2. 结尾不加句号
 ```
-
->第一行是不超过50个字的提要，然后空一行，罗列出改动原因、主要变动、以及需要注意的问题。最后，提供对应的网址（比如Bug ticket）。
 
 ### 第四步：与主干同步
 分支的开发过程中，要经常与主干保持同步。
@@ -76,6 +93,7 @@ $ git push --force origin myfeature
 ### 第六步：发出Pull Request
 提交到远程仓库以后，就可以发出 Pull Request 到master分支，然后请求别人进行代码review，确认可以合并到master。
 
+---
 
 ## 团队编码规范
 * [通用编码规范](../README.md)
@@ -91,6 +109,3 @@ $ git push --force origin myfeature
     * [PHP 编码规范](https://github.com/PizzaLiu/PHP-FIG)
     * [Java 编码规范](../README.md)
     * [Database 编码规范](database.md)
-* 软件工程规范
-    * [版本控制规范](../README.md)
-    * [GIT 使用规范](../README.md)

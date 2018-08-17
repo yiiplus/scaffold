@@ -90,6 +90,11 @@ return [
                     }
                 }
 
+                // 处理非数组输出
+                if (!is_array($response->data)) {
+                    $response->data = ['message' => $response->data];
+                }
+
                 // 数据组装
                 $response->data = [
                     'success' => $response->isSuccessful,

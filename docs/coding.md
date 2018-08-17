@@ -18,7 +18,9 @@
 
 ### 第一步：新建分支
 首先，每次开发新功能，都应该新建一个单独的分支。
-##### 分支命名规范
+
+**分支命名规范：**
+
 | 分支 | 命名 | 说明 |
 | --- | --- | --- |
 | 主分支 | master | 永远是可用的、稳定的、可直接发布的版本，不能直接在该分支上开发 |
@@ -91,9 +93,9 @@ $ git push --force origin myfeature
 ```
 
 ### 第六步：发出Pull Request
-提交到远程仓库以后，就可以发出 Pull Request 到master分支，然后请求别人进行代码review，确认可以合并到master。
+提交到远程仓库以后，就可以发出 Pull Request（Gitlab里面叫做 Merge Request） 到master分支，然后请求别人进行代码review，确认可以合并到master。
 
----
+![](_media/git.png)
 
 ## 团队编码规范
 * [通用编码规范](../README.md)
@@ -109,3 +111,4 @@ $ git push --force origin myfeature
     * [PHP 编码规范](https://github.com/PizzaLiu/PHP-FIG)
     * [Java 编码规范](../README.md)
     * [Database 编码规范](database.md)
+

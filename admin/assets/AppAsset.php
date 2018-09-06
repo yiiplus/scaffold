@@ -12,7 +12,7 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace admin\assets;
+namespace app\assets;
 
 use yii\web\AssetBundle;
 

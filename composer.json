@@ -33,6 +33,7 @@
         "yiisoft/yii2-elasticsearch": "~2.0.0",
         "yiiplus/yii2-fis-smarty": "^2.0.0",
         "yiiplus/yii2-desktop": "^2.0.0",
+        "yiiplus/yii2-kvstore": "^2.0.0",
         "sentry/sentry": "^1.8",
         "mito/yii2-sentry": "~1.0.0",
         "firebase/php-jwt": "^5.0.0"
@@ -46,12 +47,13 @@
         "squizlabs/php_codesniffer": ">=2.3.1 <3.0"
     },
     "config": {
+        "secure-http": false,
         "process-timeout": 3600
     },
     "repositories": {
         "packagist": {
             "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
+            "url": "http://packagist.yiiplus.com"
         }
     },
     "scripts": {

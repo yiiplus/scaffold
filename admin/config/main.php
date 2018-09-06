@@ -29,6 +29,10 @@ return [
         'admin' => [
             'class' => 'yiiplus\desktop\Module',
         ],
+        'kvstore' => [
+            'class' => 'yiiplus\kvstore\Module',
+            'sourceLanguage' => 'en'
+        ],
     ],
     'components' => [
         'request' => [

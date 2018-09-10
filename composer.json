@@ -12,7 +12,7 @@
     "authors": [
         {
             "name": "Hongbin Chen",
-            "email": "87003637@qq.com"
+            "email": "hongbin.chen@aliyun.com"
         },
         {
             "name": "xiankun Geng",
@@ -32,8 +32,15 @@
         "yiisoft/yii2-queue": "~2.0.0",
         "yiisoft/yii2-elasticsearch": "~2.0.0",
         "yiiplus/yii2-fis-smarty": "^2.0.0",
-        "yiiplus/yii2-desktop": "^2.0.0",
-        "yiiplus/yii2-kvstore": "^2.0.0",
+        
+        "yiiplus/yii2-desktop": "dev-develop",
+        "yiiplus/yii2-kvstore": "dev-develop",
+        "yiiplus/yii2-mailer": "dev-develop",
+        "yiiplus/yii2-smser": "dev-develop",
+        "yiiplus/yii2-storage": "dev-develop",
+        "yiiplus/yii2-app-version": "dev-develop",
+        "yiiplus/yii2-passport": "dev-develop",
+
         "sentry/sentry": "^1.8",
         "mito/yii2-sentry": "~1.0.0",
         "firebase/php-jwt": "^5.0.0"

@@ -6,7 +6,7 @@
  *
  * @category  PHP
  * @package   Yii2
- * @author    Hongbin Chen <87003637@qq.com>
+ * @author    Hongbin Chen <hongbin.chen@aliyun.com>
  * @copyright 2006-2018 YiiPlus Ltd
  * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
  * @link      http://www.yiiplus.com
@@ -19,7 +19,7 @@ namespace app\modules\user\controllers;
  *
  * @category  PHP
  * @package   Yii2
- * @author    Hongbin Chen <87003637@qq.com>
+ * @author    Hongbin Chen <hongbin.chen@aliyun.com>
  * @copyright 2006-2018 YiiPlus Ltd
  * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
  * @link      http://www.yiiplus.com
@@ -34,7 +34,7 @@ class AccountController extends \app\modules\Controller
     public function actionIndex()
     {
         $result = [
-            ['uid'=>1, 'username'=> 'jacky', 'email'=>'87003637@qq.com','access-token'=> md5(mt_rand(10000, 20000))],
+            ['uid'=>1, 'username'=> 'jacky', 'email'=>'hongbin.chen@aliyun.com','access-token'=> md5(mt_rand(10000, 20000))],
             ['uid'=>2, 'username'=> 'test', 'email'=>'test@qq.com','access-token'=> md5(mt_rand(10000, 20000))],
         ];
 
@@ -48,7 +48,7 @@ class AccountController extends \app\modules\Controller
      */
     public function actionLogin()
     {
-        return ['uid'=>1, 'username'=> 'jacky', 'email'=>'87003637@qq.com','access-token'=> md5(time())];
+        return ['uid'=>1, 'username'=> 'jacky', 'email'=>'hongbin.chen@aliyun.com','access-token'=> md5(time())];
     }
 
     /**

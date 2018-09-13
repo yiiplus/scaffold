@@ -31,7 +31,6 @@ return [
         ],
         'kvstore' => [
             'class' => 'yiiplus\kvstore\Module',
-            'sourceLanguage' => 'en'
         ],
     ],
     'components' => [

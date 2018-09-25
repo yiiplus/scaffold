@@ -3,6 +3,10 @@
 /yii_test
 /yii_test.bat
 
+# Composer
+/vendor
+composer.phar
+
 # phpstorm project files
 .idea
 
@@ -17,23 +21,16 @@ nbproject
 # windows thumbnail cache
 Thumbs.db
 
-# composer vendor dir
-/vendor
-
-# composer itself is not needed
-composer.phar
-
-# composer.lock file
-composer.lock
-
-# docker-composer itself is not needed
-/docker-compose.yaml
-/pre-commit
-
 # Mac DS_Store Files
 .DS_Store
 
-# phpunit itself is not needed
-phpunit.phar
-# local phpunit config
+# docker
+/docker-compose.yaml
+/.pre-commit
+
+# phpunit
 /phpunit.xml
+phpunit.phar
+
+# Vagrant
+/.vagrant

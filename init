@@ -79,7 +79,7 @@ foreach ($files as $file) {
 
 // Git钩子：语法检查
 if ($envName == 'Development') {
-    copyFile($root, 'pre-commit', '.git/hooks/pre-commit', $all, $params);    
+    copyFile($root, '.pre-commit', '.git/hooks/pre-commit', $all, $params);    
 }
 
 $callbacks = ['setCookieValidationKey', 'setWritable', 'setExecutable', 'createSymlink'];

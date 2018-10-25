@@ -1,16 +1,20 @@
 <?php
 /**
- * Application requirement checker script.
+ * 脚手架
  *
- * In order to run this script use the following console command:
- * php requirements.php
+ * PHP version 7
  *
- * In order to run this script from the web, you should copy it to the web root.
- * If you are using Linux you can create a hard link instead, using the following command:
- * ln ../requirements.php requirements.php
+ * @category  PHP
+ * @package   Yii2
+ * @author    Hongbin Chen <hongbin.chen@aliyun.com>
+ * @copyright 2006-2018 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @link      http://www.yiiplus.com
  */
 
-// you may need to adjust this path to the correct Yii framework path
+/**
+ * 程序必要条件检查脚本
+ */
 $frameworkPath = dirname(__FILE__) . '/vendor/yiisoft/yii2';
 
 if (!is_dir($frameworkPath)) {

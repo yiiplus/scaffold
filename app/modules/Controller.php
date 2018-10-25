@@ -55,41 +55,41 @@ abstract class Controller extends \yii\rest\Controller
 
         $behaviors['tokenValidate'] = [
             'class' => 'app\filters\auth\JwtAuth',
-            'except' => $this->isDebug ? ['*'] : []
+            'except' => $this->debug ? ['*'] : []
         ];
 
         $behaviors['timestampValidate'] = [
             'class' => 'app\filters\auth\TimestampAuth',
-            'except' => $this->isDebug ? ['*'] : []
+            'except' => $this->debug ? ['*'] : []
         ];
 
         $behaviors['authValidate'] = [
             'class' => 'app\filters\auth\AccessTokenAuth',
-            'except'  => $this->isDebug ? ['*'] : []
+            'except'  => $this->debug ? ['*'] : []
         ];
 
         $behaviors['rateLimiter'] = [
             'class' => 'app\filters\auth\RateLimiterAuth',
             'enableRateLimitHeaders' => true,
-            'except'  => $this->isDebug ? ['*'] : []
+            'except'  => $this->debug ? ['*'] : []
         ];
 
         return $behaviors;
     }
 
     /**
-     * 当在开发环境下使用GET方式传入的`__debug__`参数为1时，isDebug属性为true
+     * 当在开发环境下使用GET方式传入的`__debug__`参数为1时，debug属性为true
      * 此时大部分behaviors将不会执行 e.g:
      * ```php
      *  $behaviors['authValidate'] = [
      *      'class' => 'app\extensions\auth\AccessTokenAuth',
-     *      'except'  => $this->isDebug ? ['*'] : [] //except属性对isDebug进行支持
+     *      'except'  => $this->debug ? ['*'] : [] //except属性对debug进行支持
      *  ];
      * ```
      *
      * @return bool
      */
-    public function getIsDebug()
+    public function getDebug()
     {
         return YII_DEBUG && Yii::$app->request->get('__debug__') == 1;
     }

@@ -19,20 +19,25 @@
 #   build:composer
 #   test:unit
 #   test:api
-#   package:test
+#   package:develop
 #   deploy:test
+#   Release to testing server.
 #
 # Release
 #   test:unit
 #   test:api
-#   package:prod
-#   deploy:release
+#   package:master
+#   deploy:pre-release
+#   Release to pre release server.
 #
 # Production
 #   test:unit
 #   test:api
-#   package:prod
-#   deploy:prod
+#   package:master
+#   deploy:prod-001
+#   deploy:prod-002
+#   deploy:prod-003
+#   Release to production server.
 ###################################################
 
 image: gengxiankun/build:latest
@@ -302,7 +307,7 @@ deploy:test:
   environment:
     name: test
 
-deploy:release:
+deploy:pre-release:
   stage: deploy
   variables:
     GIT_STRATEGY: none
@@ -363,7 +368,7 @@ testing:
     - develop
   environment:
     name: test
-release:
+pre-release:
   stage: release
   variables:
     GIT_STRATEGY: none

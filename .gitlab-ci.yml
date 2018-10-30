@@ -283,7 +283,6 @@ package:master:
     - master
     - tags
 
-
 ############## deploy ##############
 deploy:test:
   stage: deploy

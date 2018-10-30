@@ -3,7 +3,7 @@ version: '2'
 services:
     cgi:
         container_name: cgi
-        build: ./docker/dockerfiles/cgi
+        build: ./docker/files/cgi
         restart: always
         expose:
             - "9000"
@@ -17,7 +17,7 @@ services:
             - phpmyadmin:phpmyadmin
     proxy:
         container_name: proxy
-        build: ./docker/dockerfiles/proxy
+        build: ./docker/files/proxy
         restart: always
         ports:
             - "80:80"
@@ -31,7 +31,7 @@ services:
             - cgi
     crond:
         container_name: crond
-        build: ./docker/dockerfiles/crond
+        build: ./docker/files/crond
         restart: always
         volumes:
             - ./:/www
@@ -40,17 +40,6 @@ services:
         links:
             - mysql:mysql
             - redis:redis
-    # queue:
-    #     container_name: queue
-    #     build: ./docker/dockerfiles/crond
-    #     restart: always
-    #     volumes:
-    #         - ./:/www
-    #     working_dir: /www
-    #     links:
-    #         - mysql:mysql
-    #         - redis:redis
-    #     command: ./yii queue/listen
     mysql:
         container_name: mysql
         image: daocloud.io/library/mysql:5.6
@@ -60,7 +49,7 @@ services:
         ports:
             - "3306:3306"
         volumes:
-            - ./docker/docker_data/var_lib_mysql:/var/lib/mysql
+            - ./docker/data/var_lib_mysql:/var/lib/mysql
         environment:
             - MYSQL_ROOT_PASSWORD=root
         restart: always
@@ -73,11 +62,11 @@ services:
         ports:
           - "6379:6379"
         volumes:
-          - ./docker/docker_data/var_lib_redis:/data
+          - ./docker/data/var_lib_redis:/data
         command: redis-server --appendonly yes
     fis3:
         container_name: fis3
-        build: ./docker/dockerfiles/fis3
+        build: ./docker/files/fis3
         restart: always
         expose:
             - "8080"

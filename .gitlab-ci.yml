@@ -55,7 +55,6 @@ before_script:
     - mkdir -p ~/.ssh    
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
-
 ############## build ##############
 build:composer:
   stage: build
@@ -253,13 +252,19 @@ package:master:
 ############## deploy ##############
 .stage-deploy:
   stage: deploy
+  variables:
+    GIT_STRATEGY: none
   script:
     - if [ ! -d "vendor" ]; then
     - exit 1
     - fi
     - deploy --project-name ${CI_PROJECT_NAME} --project-version ${CI_COMMIT_SHA} ${SSH_SERVER} transmission
+  dependencies:
+    - package:master
   except:
     - docs
+  only:
+    - tags
 
 deploy:test:
   extends: .stage-deploy
@@ -270,71 +275,58 @@ deploy:test:
     - package:develop
   only:
     - develop
-  environment:
-    name: test
 
 deploy:review:
   extends: .stage-deploy
   variables:
-    GIT_STRATEGY: none
     SSH_SERVER: root@192.168.1.102
-  dependencies:
-    - package:master
   only:
     - master
-  environment:
-    name: review
 
 deploy:prod-001:
   extends: .stage-deploy
   variables:
-    GIT_STRATEGY: none
     SSH_SERVER: root@192.168.1.103
-  dependencies:
-    - package:master
-  only:
-    - tags
 
 # deploy:prod-002:
-#   extends: .transmission
+#   extends: .stage-deploy
 #   variables:
-#     GIT_STRATEGY: none
 #     SSH_SERVER: root@192.168.1.104
-#   dependencies:
-#     - package:master
-#   only:
-#     - tags
 
 ############## release ##############
 .stage-release:
   stage: release
   variables:
     GIT_STRATEGY: none
+  script:
+    - OLDIFS=$IFS;IFS=',';for SSH_SERVER in $SSH_SERVERS; do
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA ${SSH_SERVER} release
+    - done;IFS=$OLDIFS
   except:
     - docs
 
 release:testing:
   extends: .stage-release
-  script:
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.1.101 release
+  variables:
+    SSH_SERVERS: root@192.168.1.101
   only:
     - develop
   environment:
-    name: test
+    name: testing
 
 release:review:
   extends: .stage-release
-  script:
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.1.102 release
+  variables:
+    SSH_SERVERS: root@192.168.1.102
   only:
     - master
   environment:
-    name: release
+    name: review
 
 release:production:
   extends: .stage-release
-  script:
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.1.103 release
+  variables:
+    SSH_SERVERS: root@192.168.1.103
   only:
     - tags
   when: manual

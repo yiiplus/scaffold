@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-#
-# deploy(1) - Minimalistic shell script to deploy Git repositories.
-# Released under the MIT License.
-#
-# https://github.com/visionmedia/deploy
-#
-
 VERSION=1.0.0
 BUILD_PATH=/data/build_release/
 WEBSITE_PATH=/data/website/

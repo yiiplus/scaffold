@@ -1,0 +1,19 @@
+actor: Tester
+paths:
+    tests: ./
+    log: ./_output
+    data: ./_data
+    support: ./_support
+    envs: ./_envs
+settings:
+    bootstrap: _bootstrap.php
+    colors: true
+    memory_limit: 1024M
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+modules:
+    config:
+        Yii2:
+            configFile: '../common/config/test-local.php'
+

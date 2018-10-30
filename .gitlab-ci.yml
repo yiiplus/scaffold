@@ -1,0 +1,156 @@
+###################################################
+# 《YiiPlus脚手架》持续集成配置
+#
+# YiiPlus Scaffold
+# Application  [common console admin app pc h5]
+# Environments [Development Testing Production]
+###################################################
+
+#声明使用的Docker镜像
+image: gengxiankun/php:7.1-pc-latest
+
+#定义变量
+variables:
+    #项目名称
+    PROJECT_NAME: "scaffold"
+    #目标机器-发布版本库
+    RELEASE_LIB: "/data/build_release/"
+    #目标机器-代码最终部署路径
+    RELEASE_TO: "/data/site/"
+
+#定义每个job之前执行的脚本，每个job启动时会先执行该脚本。
+before_script:
+    # 启动服务
+    - eval $(ssh-agent -s)
+    # 将私钥写入deploy.key 文件
+    - echo "$SSH_PRIVATE_KEY" > deploy.key
+    # 配置较低权限
+    - chmod 0600 deploy.key
+    # 注入密钥
+    - ssh-add deploy.key
+    - mkdir -p ~/.ssh    
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+ 
+#定义构建阶段
+stages:
+    - "准备"
+    - "编译"
+    - "测试"
+    - "打包"
+    - "部署"
+
+############ 准备 ############
+"准备":
+    stage: "准备"
+    image: docker:latest
+    before_script: []
+    cache: {}
+    dependencies: []
+    script:
+         - docker pull codeclimate/codeclimate
+         - VOLUME_PATH=/tmp/builds"$(echo $PWD | sed 's|^/[^/]*||')"
+         - docker run 
+            --env CODECLIMATE_CODE="$VOLUME_PATH" 
+            --volume /tmp/cc:/tmp/cc
+            --volume $VOLUME_PATH:/code
+            --volume /var/run/docker.sock:/var/run/docker.sock 
+            codeclimate/codeclimate analyze -f text
+    allow_failure: true
+    when: manual
+
+
+############ 编译 ############
+"【生产环境】Yii 初始化":
+    stage: "编译"
+    script:
+        - echo 'Yii 初始化 master 跳过...'
+    only:
+        - master
+"Yii 初始化":
+    stage: "编译"
+    script:
+        - - if [ ! -d "vendor" ]; then
+
+        echo 'Yii 初始化 develop 跳过...'
+    only:
+        - develop
+"编译 PC-FIS3":
+    stage: "编译"
+    script:
+        - echo '编译 PC-FIS3 跳过...'
+    only:
+        - master
+        - develop
+    only:
+        changes:
+            - pc/fis3
+"编译 H5-FIS3":
+    stage: "编译"
+    script:
+        - echo '编译 H5-FIS3 跳过...'
+    only:
+        - master
+        - develop
+    only:
+        changes:
+            - h5/fis3
+# "编译 composer":
+#     stage: "编译"
+#     script:
+#         - composer install --prefer-dist --optimize-autoloader -n --no-interaction -v --no-suggest --no-dev
+#         - composer dump-autoload --optimize
+#     dependencies: []
+#     artifacts:
+#         name: "vendor"
+#         paths:
+#             - vendor
+#     only:
+#         - master
+#         changes:
+#             - composer.json
+
+############ 测试 ############
+"代码规范审查":
+    stage: "测试"
+    script:
+        - echo '代码规范审查 跳过...'
+    except:
+        - tags
+        - master
+        - develop
+"评估代码质量":
+    stage: "测试"
+    script:
+        - echo '评估代码质量 跳过...'
+    except:
+        - tags
+        - master
+        - develop
+"单元测试":
+    stage: "测试"
+    script:
+        - echo '单元测试 跳过...'
+    except:
+        - tags
+        - master
+"API测试":
+    stage: "测试"
+    script:
+        - echo 'API测试 跳过...'
+    except:
+        - tags
+        - master
+
+############ 打包 ############
+"打包":
+    stage: "打包"
+    script:
+        - echo '打包 跳过...'
+
+############ 部署 ############
+"部署":
+    stage: "部署"
+    script:
+        - echo '部署 跳过...'
+    # allow_failure: true
+    # when: manual

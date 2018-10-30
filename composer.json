@@ -39,8 +39,6 @@
         "yiiplus/yii2-storage": "dev-develop",
         "yiiplus/yii2-app-version": "dev-develop",
         "yiiplus/yii2-passport": "dev-develop",
-        "sentry/sentry": "^1.8",
-        "mito/yii2-sentry": "~1.0.0",
         "firebase/php-jwt": "^5.0.0"
     },
     "require-dev": {

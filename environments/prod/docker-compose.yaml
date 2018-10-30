@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+    www:
+        container_name: www
+        build: ./docker/service/php7.1_openresty
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./:/www
+            - ./docker/project/dev/nginx.conf:/etc/nginx/nginx.conf
+            - ./docker/project/dev/nginx.d:/etc/nginx/conf.d
+            - ./docker/project/dev/php.d/50-redis.ini:/etc/php.d/50-redis.ini
+        working_dir: /www

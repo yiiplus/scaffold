@@ -1,0 +1,19 @@
+# Codeception Test Suite Configuration
+
+# suite for unit (internal) tests.
+class_name: UnitTester
+bootstrap: false
+modules:
+    enabled:
+        - Yii2:
+            part: [fixtures,orm]
+        - Db:
+            dsn: mysql:host=mysql;dbname=web
+            user: web
+            password: web
+            dump: './_data/dump.sql'
+            populate: true
+            cleanup: false
+            reconnect: true
+        - Asserts
+

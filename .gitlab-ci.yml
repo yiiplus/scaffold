@@ -307,7 +307,7 @@ deploy:test:
   environment:
     name: test
 
-deploy:pre-release:
+deploy:review:
   stage: deploy
   variables:
     GIT_STRATEGY: none
@@ -356,7 +356,7 @@ deploy:prod-001:
 #     - tags
 
 ############## release ##############
-testing:
+release:testing:
   stage: release
   variables:
     GIT_STRATEGY: none
@@ -368,7 +368,7 @@ testing:
     - develop
   environment:
     name: test
-pre-release:
+release:review:
   stage: release
   variables:
     GIT_STRATEGY: none
@@ -380,7 +380,7 @@ pre-release:
     - master
   environment:
     name: release
-production:
+release:production:
   stage: release
   variables:
     GIT_STRATEGY: none
@@ -391,3 +391,6 @@ production:
     - docs
   only:
     - tags
+  when: manual
+  environment:
+    name: production

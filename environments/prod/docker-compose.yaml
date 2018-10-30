@@ -1,16 +1,34 @@
 version: '2'
 
 services:
-    www:
-        container_name: www
-        build: ./docker/service/php7.1_openresty
+    cgi:
+        container_name: cgi
+        image: regist.yiiplus.com/moego/cgi
+        restart: always
+        expose:
+            - "9000"
+        volumes:
+            - ./:/www
+        working_dir: /www
+    proxy:
+        container_name: proxy
+        image: regist.yiiplus.com/moego/proxy
         restart: always
         ports:
             - "80:80"
             - "443:443"
         volumes:
+            - ./manifests/config/proxy/conf.d:/etc/nginx/conf.d
+        volumes_from:
+            - cgi
+        working_dir: /etc/nginx
+        links:
+            - cgi:cgi
+    crond:
+        container_name: crond
+        image: regist.yiiplus.com/moego/crond
+        restart: always
+        volumes:
             - ./:/www
-            - ./docker/project/dev/nginx.conf:/etc/nginx/nginx.conf
-            - ./docker/project/dev/nginx.d:/etc/nginx/conf.d
-            - ./docker/project/dev/php.d/50-redis.ini:/etc/php.d/50-redis.ini
+            - ./crontab/crontab:/etc/crontab
         working_dir: /www

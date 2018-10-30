@@ -258,7 +258,9 @@ package:master:
     - if [ ! -d "vendor" ]; then
     - exit 1
     - fi
+    - OLDIFS=$IFS;IFS=',';for SSH_SERVER in $SSH_SERVERS; do
     - deploy --project-name ${CI_PROJECT_NAME} --project-version ${CI_COMMIT_SHA} ${SSH_SERVER} transmission
+    - done;IFS=$OLDIFS
   dependencies:
     - package:master
   except:
@@ -270,7 +272,7 @@ deploy:test:
   extends: .stage-deploy
   variables:
     GIT_STRATEGY: none
-    SSH_SERVER: root@192.168.1.101
+    SSH_SERVERS: root@192.168.1.101
   dependencies:
     - package:develop
   only:
@@ -279,19 +281,19 @@ deploy:test:
 deploy:review:
   extends: .stage-deploy
   variables:
-    SSH_SERVER: root@192.168.1.102
+    SSH_SERVERS: root@192.168.1.102
   only:
     - master
 
 deploy:prod-001:
   extends: .stage-deploy
   variables:
-    SSH_SERVER: root@192.168.1.103
+    SSH_SERVERS: root@192.168.1.103
 
 # deploy:prod-002:
 #   extends: .stage-deploy
 #   variables:
-#     SSH_SERVER: root@192.168.1.104
+#     SSH_SERVERS: root@192.168.1.104
 
 ############## release ##############
 .stage-release:

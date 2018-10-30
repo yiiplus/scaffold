@@ -5,152 +5,385 @@
 # Application  [common console admin app pc h5]
 # Environments [Development Testing Production]
 ###################################################
+# 任务路线图
+# 
+# Development
+#   build:composer
+#   codeview:phpcs
+#   codeview:phpmd
+#   codeview:codequality
+#   test:unit
+#   test:api
+#
+# Testing
+#   build:composer
+#   test:unit
+#   test:api
+#   package:test
+#   deploy:test
+#
+# Release
+#   test:unit
+#   test:api
+#   package:prod
+#   deploy:release
+#
+# Production
+#   test:unit
+#   test:api
+#   package:prod
+#   deploy:prod
+###################################################
 
-#声明使用的Docker镜像
-image: gengxiankun/php:7.1-pc-latest
+image: gengxiankun/build:latest
 
-#定义变量
-variables:
-    #项目名称
-    PROJECT_NAME: "scaffold"
-    #目标机器-发布版本库
-    RELEASE_LIB: "/data/build_release/"
-    #目标机器-代码最终部署路径
-    RELEASE_TO: "/data/site/"
+stages:
+  - build
+  - test
+  - package
+  - deploy
+  - release
 
-#定义每个job之前执行的脚本，每个job启动时会先执行该脚本。
 before_script:
-    # 启动服务
     - eval $(ssh-agent -s)
-    # 将私钥写入deploy.key 文件
-    - echo "$SSH_PRIVATE_KEY" > deploy.key
-    # 配置较低权限
-    - chmod 0600 deploy.key
-    # 注入密钥
-    - ssh-add deploy.key
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh    
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
- 
-#定义构建阶段
-stages:
-    - "准备"
-    - "编译"
-    - "测试"
-    - "打包"
-    - "部署"
 
-############ 准备 ############
-"准备":
-    stage: "准备"
-    image: docker:latest
-    before_script: []
-    cache: {}
-    dependencies: []
-    script:
-         - docker pull codeclimate/codeclimate
-         - VOLUME_PATH=/tmp/builds"$(echo $PWD | sed 's|^/[^/]*||')"
-         - docker run 
-            --env CODECLIMATE_CODE="$VOLUME_PATH" 
-            --volume /tmp/cc:/tmp/cc
-            --volume $VOLUME_PATH:/code
-            --volume /var/run/docker.sock:/var/run/docker.sock 
-            codeclimate/codeclimate analyze -f text
-    allow_failure: true
-    when: manual
+.services:
+  services:
+    - name: mysql:5.6
+      alias: mysql
+      command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-storage-engine=INNODB','--innodb_large_prefix=1','--innodb_file_format=Barracuda']
+    - name: redis:alpine
+      alias: redis
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: yiiplus
+    MYSQL_USER: web
+    MYSQL_PASSWORD: web
+  dependencies: []
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - vendor
+
+############## build ##############
+build:composer:
+  stage: build
+  before_script: []
+  dependencies: []
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - vendor
+  script:
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    - composer dump-autoload --optimize
+
+############## test ##############
+codeview:phpcs:
+  stage: test
+  before_script: []
+  dependencies: []
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - vendor
+  script:
+    - if [ ! -d "vendor" ]; then
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    - composer dump-autoload --optimize
+    - fi
+    - php vendor/bin/phpcs --standard=PSR2 --extensions=php --ignore=docs/,docker/,vendor/,console/migrations/,tests -w -n --colors ./
+  except:
+    - docs
+    - develop
+    - master
+    - tags
+
+codeview:phpmd:
+  stage: test
+  before_script: []
+  dependencies: []
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - vendor
+  script:
+    - if [ ! -d "vendor" ]; then
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    - composer dump-autoload --optimize
+    - fi
+    - vendor/bin/phpmd admin,app,common,console,pc,h5 text phpmd.xml --exclude vendor/,console/migrations --suffixes php
+  except:
+    - docs
+    - develop
+    - master
+    - tags
+
+codeview:codequality:
+  stage: test
+  image: docker:latest
+  before_script: []
+  dependencies: []
+  cache: {}
+  script:
+    - docker pull codeclimate/codeclimate
+    - VOLUME_PATH=/tmp/builds"$(echo $PWD | sed 's|^/[^/]*||')"
+    - docker run --env CODECLIMATE_CODE="$VOLUME_PATH" -v /tmp/cc:/tmp/cc -v $VOLUME_PATH:/code -v /var/run/docker.sock:/var/run/docker.sock codeclimate/codeclimate analyze -f text
+  except:
+    - docs
+    - tags
+    - develop
+    - master
+  allow_failure: true
+  when: manual
+
+test:unit:
+  stage: test
+  before_script: []
+  dependencies: []
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - vendor
+  extends: .services
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+  script:
+    - echo '跳过...'
+  # script:
+  #   - if [ ! -d "vendor" ]; then
+  #   - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+  #   - composer dump-autoload --optimize
+  #   - fi
+  #   - php init --env=Development --overwrite=y
+  #   - ./yii migrate/up --interactive=0
+  #   - ./vendor/bin/codecept run unit -c tests --coverage --no-colors
+  # artifacts:
+  #   name: "debug"
+  #   when: on_failure
+  #   untracked: true
+  #   paths:
+  #       - $CI_PROJECT_DIR/tests/_output
+test:api:
+  stage: test
+  before_script: []
+  dependencies: []
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - vendor
+  extends: .services
+  script:
+    - echo '跳过...'
+  # script:
+  #   - if [ ! -d "vendor" ]; then
+  #   - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+  #   - composer dump-autoload --optimize
+  #   - fi
+  #   - php init --env=Development --overwrite=y
+  #   - ./yii migrate/up --interactive=0
+  #   - php -S localhost:80 --docroot app/tests &>/dev/null&
+  #   - ./vendor/bin/codecept run app -c tests
+  # artifacts:
+  #   name: "debug"
+  #   when: on_failure
+  #   untracked: true
+  #   paths:
+  #     - $CI_PROJECT_DIR/app/runtime
+  #     - $CI_PROJECT_DIR/tests/_output
+
+############## package ##############
+package:develop:
+  stage: package
+  before_script: []
+  dependencies: []
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - vendor
+  script:
+    - if [ ! -d "vendor" ]; then
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    - composer dump-autoload --optimize
+    - fi
+    - ./pc/fis3/build.sh
+    - ./h5/fis3/build.sh
+    - php init --env=Testing --overwrite=y
+    - rm -rf console/runtime
+    - rm -rf admin/web/assets/* admin/runtime admin/tests
+    - rm -rf app/web/assets/* app/runtime app/tests
+    - rm -rf pc/web/assets/* pc/runtime pc/tests
+    - rm -rf h5/web/assets/* h5/runtime h5/tests
+    - rm -rf pc/fis3 h5/fis3
+  artifacts:
+    name: "$CI_PROJECT_NAME"
+    untracked: false
+    paths:
+      - docker
+      - vendor
+      - common
+      - console
+      - admin
+      - app
+      - pc
+      - h5
+      - yii
+      - docker-compose.yaml
+  except:
+    - docs
+  only:
+    - develop
+
+package:master:
+  stage: package
+  before_script: []
+  dependencies: []
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - vendor
+  script:
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction --no-suggest --no-dev -vvv
+    - composer dump-autoload --optimize
+    - ./pc/fis3/build.sh
+    - ./h5/fis3/build.sh
+    - php init --env=Production --overwrite=y
+    - rm -rf console/runtime
+    - rm -rf admin/web/assets/* admin/runtime admin/tests
+    - rm -rf app/web/assets/* app/runtime app/tests
+    - rm -rf pc/web/assets/* pc/runtime pc/tests
+    - rm -rf h5/web/assets/* h5/runtime h5/tests
+    - rm -rf pc/fis3 h5/fis3
+  artifacts:
+    name: "$CI_PROJECT_NAME"
+    untracked: false
+    paths:
+      - docker
+      - vendor
+      - common
+      - console
+      - admin
+      - app
+      - pc
+      - h5
+      - yii
+      - docker-compose.yaml
+  except:
+    - docs
+  only:
+    - master
+    - tags
 
 
-############ 编译 ############
-"【生产环境】Yii 初始化":
-    stage: "编译"
-    script:
-        - echo 'Yii 初始化 master 跳过...'
-    only:
-        - master
-"Yii 初始化":
-    stage: "编译"
-    script:
-        - - if [ ! -d "vendor" ]; then
+############## deploy ##############
+deploy:test:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - package:develop
+  script:
+    - if [ ! -d "vendor" ]; then
+    - exit 1
+    - fi
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@111.230.230.147 transmission
+  except:
+    - docs
+  only:
+    - develop
+  environment:
+    name: test
 
-        echo 'Yii 初始化 develop 跳过...'
-    only:
-        - develop
-"编译 PC-FIS3":
-    stage: "编译"
-    script:
-        - echo '编译 PC-FIS3 跳过...'
-    only:
-        - master
-        - develop
-    only:
-        changes:
-            - pc/fis3
-"编译 H5-FIS3":
-    stage: "编译"
-    script:
-        - echo '编译 H5-FIS3 跳过...'
-    only:
-        - master
-        - develop
-    only:
-        changes:
-            - h5/fis3
-# "编译 composer":
-#     stage: "编译"
-#     script:
-#         - composer install --prefer-dist --optimize-autoloader -n --no-interaction -v --no-suggest --no-dev
-#         - composer dump-autoload --optimize
-#     dependencies: []
-#     artifacts:
-#         name: "vendor"
-#         paths:
-#             - vendor
-#     only:
-#         - master
-#         changes:
-#             - composer.json
+deploy:release:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - package:master
+  script:
+    - if [ ! -d "vendor" ]; then
+    - exit 1
+    - fi
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@172.16.64.3 transmission
+  except:
+    - docs
+  only:
+    - master
 
-############ 测试 ############
-"代码规范审查":
-    stage: "测试"
-    script:
-        - echo '代码规范审查 跳过...'
-    except:
-        - tags
-        - master
-        - develop
-"评估代码质量":
-    stage: "测试"
-    script:
-        - echo '评估代码质量 跳过...'
-    except:
-        - tags
-        - master
-        - develop
-"单元测试":
-    stage: "测试"
-    script:
-        - echo '单元测试 跳过...'
-    except:
-        - tags
-        - master
-"API测试":
-    stage: "测试"
-    script:
-        - echo 'API测试 跳过...'
-    except:
-        - tags
-        - master
+deploy:prod-001:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - package:master
+  script:
+    - if [ ! -d "vendor" ]; then
+    - exit 1
+    - fi
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@172.16.64.10 transmission
+  except:
+    - docs
+  only:
+    - tags 
 
-############ 打包 ############
-"打包":
-    stage: "打包"
-    script:
-        - echo '打包 跳过...'
+# deploy:prod-002:
+#   stage: deploy
+#   variables:
+#     GIT_STRATEGY: none
+#   dependencies:
+#     - package:master
+#   script:
+#     - if [ ! -d "vendor" ]; then
+#     - exit 1
+#     - fi
+#     - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.2.33 transmission
+#   except:
+#     - docs
+#   only:
+#     - tags
 
-############ 部署 ############
-"部署":
-    stage: "部署"
-    script:
-        - echo '部署 跳过...'
-    # allow_failure: true
-    # when: manual
+############## release ##############
+testing:
+  stage: release
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@111.230.230.147 release
+  except:
+    - docs
+  only:
+    - develop
+  environment:
+    name: test
+release:
+  stage: release
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@172.16.64.3 release
+  except:
+    - docs
+  only:
+    - master
+  environment:
+    name: release
+production:
+  stage: release
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@172.16.64.10 release
+    # - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.2.33 release
+  except:
+    - docs
+  only:
+    - tags

@@ -55,24 +55,6 @@ before_script:
     - mkdir -p ~/.ssh    
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
-.services:
-  services:
-    - name: mysql:5.6
-      alias: mysql
-      command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-storage-engine=INNODB','--innodb_large_prefix=1','--innodb_file_format=Barracuda']
-    - name: redis:alpine
-      alias: redis
-  variables:
-    MYSQL_ROOT_PASSWORD: root
-    MYSQL_DATABASE: yiiplus
-    MYSQL_USER: web
-    MYSQL_PASSWORD: web
-  dependencies: []
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - vendor
 
 ############## build ##############
 build:composer:
@@ -88,7 +70,7 @@ build:composer:
     - composer dump-autoload --optimize
 
 ############## test ##############
-codeview:phpcs:
+.stage-test:
   stage: test
   before_script: []
   dependencies: []
@@ -97,6 +79,9 @@ codeview:phpcs:
     policy: pull
     paths:
       - vendor
+
+codeview:phpcs:
+  extends: .stage-test
   script:
     - if [ ! -d "vendor" ]; then
     - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
@@ -110,14 +95,7 @@ codeview:phpcs:
     - tags
 
 codeview:phpmd:
-  stage: test
-  before_script: []
-  dependencies: []
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - vendor
+  extends: .stage-test
   script:
     - if [ ! -d "vendor" ]; then
     - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
@@ -131,10 +109,8 @@ codeview:phpmd:
     - tags
 
 codeview:codequality:
-  stage: test
+  extends: .stage-test
   image: docker:latest
-  before_script: []
-  dependencies: []
   cache: {}
   script:
     - docker pull codeclimate/codeclimate
@@ -149,15 +125,18 @@ codeview:codequality:
   when: manual
 
 test:unit:
-  stage: test
-  before_script: []
-  dependencies: []
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - vendor
-  extends: .services
+  extends: .stage-test
+  services:
+    - name: mysql:5.6
+      alias: mysql
+      command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-storage-engine=INNODB','--innodb_large_prefix=1','--innodb_file_format=Barracuda']
+    - name: redis:alpine
+      alias: redis
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: yiiplus
+    MYSQL_USER: web
+    MYSQL_PASSWORD: web
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   script:
     - echo '跳过...'
@@ -176,15 +155,18 @@ test:unit:
   #   paths:
   #       - $CI_PROJECT_DIR/tests/_output
 test:api:
-  stage: test
-  before_script: []
-  dependencies: []
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - vendor
-  extends: .services
+  extends: .stage-test
+  services:
+    - name: mysql:5.6
+      alias: mysql
+      command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-storage-engine=INNODB','--innodb_large_prefix=1','--innodb_file_format=Barracuda']
+    - name: redis:alpine
+      alias: redis
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: yiiplus
+    MYSQL_USER: web
+    MYSQL_PASSWORD: web
   script:
     - echo '跳过...'
   # script:
@@ -205,7 +187,7 @@ test:api:
   #     - $CI_PROJECT_DIR/tests/_output
 
 ############## package ##############
-package:develop:
+.stage-package:
   stage: package
   before_script: []
   dependencies: []
@@ -214,6 +196,25 @@ package:develop:
     policy: pull
     paths:
       - vendor
+  artifacts:
+    name: "$CI_PROJECT_NAME"
+    untracked: false
+    paths:
+      - docker
+      - vendor
+      - common
+      - console
+      - admin
+      - app
+      - pc
+      - h5
+      - yii
+      - docker-compose.yaml
+  except:
+    - docs
+
+package:develop:
+  extends: .stage-package
   script:
     - if [ ! -d "vendor" ]; then
     - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
@@ -228,34 +229,11 @@ package:develop:
     - rm -rf pc/web/assets/* pc/runtime pc/tests
     - rm -rf h5/web/assets/* h5/runtime h5/tests
     - rm -rf pc/fis3 h5/fis3
-  artifacts:
-    name: "$CI_PROJECT_NAME"
-    untracked: false
-    paths:
-      - docker
-      - vendor
-      - common
-      - console
-      - admin
-      - app
-      - pc
-      - h5
-      - yii
-      - docker-compose.yaml
-  except:
-    - docs
   only:
     - develop
 
 package:master:
-  stage: package
-  before_script: []
-  dependencies: []
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - vendor
+  extends: .stage-package
   script:
     - composer install --prefer-dist --optimize-autoloader -n --no-interaction --no-suggest --no-dev -vvv
     - composer dump-autoload --optimize
@@ -268,127 +246,95 @@ package:master:
     - rm -rf pc/web/assets/* pc/runtime pc/tests
     - rm -rf h5/web/assets/* h5/runtime h5/tests
     - rm -rf pc/fis3 h5/fis3
-  artifacts:
-    name: "$CI_PROJECT_NAME"
-    untracked: false
-    paths:
-      - docker
-      - vendor
-      - common
-      - console
-      - admin
-      - app
-      - pc
-      - h5
-      - yii
-      - docker-compose.yaml
-  except:
-    - docs
   only:
     - master
     - tags
 
 ############## deploy ##############
-deploy:test:
+.stage-deploy:
   stage: deploy
-  variables:
-    GIT_STRATEGY: none
-  dependencies:
-    - package:develop
   script:
     - if [ ! -d "vendor" ]; then
     - exit 1
     - fi
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@111.230.230.147 transmission
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version ${CI_COMMIT_SHA} ${SSH_SERVER} transmission
   except:
     - docs
+
+deploy:test:
+  extends: .stage-deploy
+  variables:
+    GIT_STRATEGY: none
+    SSH_SERVER: root@192.168.1.101
+  dependencies:
+    - package:develop
   only:
     - develop
   environment:
     name: test
 
 deploy:review:
-  stage: deploy
+  extends: .stage-deploy
   variables:
     GIT_STRATEGY: none
+    SSH_SERVER: root@192.168.1.102
   dependencies:
     - package:master
-  script:
-    - if [ ! -d "vendor" ]; then
-    - exit 1
-    - fi
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@172.16.64.3 transmission
-  except:
-    - docs
   only:
     - master
+  environment:
+    name: review
 
 deploy:prod-001:
-  stage: deploy
+  extends: .stage-deploy
   variables:
     GIT_STRATEGY: none
+    SSH_SERVER: root@192.168.1.103
   dependencies:
     - package:master
-  script:
-    - if [ ! -d "vendor" ]; then
-    - exit 1
-    - fi
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@172.16.64.10 transmission
-  except:
-    - docs
   only:
-    - tags 
+    - tags
 
 # deploy:prod-002:
-#   stage: deploy
+#   extends: .transmission
 #   variables:
 #     GIT_STRATEGY: none
+#     SSH_SERVER: root@192.168.1.104
 #   dependencies:
 #     - package:master
-#   script:
-#     - if [ ! -d "vendor" ]; then
-#     - exit 1
-#     - fi
-#     - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.2.33 transmission
-#   except:
-#     - docs
 #   only:
 #     - tags
 
 ############## release ##############
-release:testing:
+.stage-release:
   stage: release
   variables:
     GIT_STRATEGY: none
-  script:
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@111.230.230.147 release
   except:
     - docs
+
+release:testing:
+  extends: .stage-release
+  script:
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.1.101 release
   only:
     - develop
   environment:
     name: test
+
 release:review:
-  stage: release
-  variables:
-    GIT_STRATEGY: none
+  extends: .stage-release
   script:
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@172.16.64.3 release
-  except:
-    - docs
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.1.102 release
   only:
     - master
   environment:
     name: release
+
 release:production:
-  stage: release
-  variables:
-    GIT_STRATEGY: none
+  extends: .stage-release
   script:
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@172.16.64.10 release
-    # - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.2.33 release
-  except:
-    - docs
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA root@192.168.1.103 release
   only:
     - tags
   when: manual

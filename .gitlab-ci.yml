@@ -5,40 +5,6 @@
 # Application  [common console admin app pc h5]
 # Environments [Development Testing Production]
 ###################################################
-# 任务路线图
-# 
-# Development
-#   build:composer
-#   codeview:phpcs
-#   codeview:phpmd
-#   codeview:codequality
-#   test:unit
-#   test:api
-#
-# Testing
-#   build:composer
-#   test:unit
-#   test:api
-#   package:develop
-#   deploy:test
-#   Release to testing server.
-#
-# Release
-#   test:unit
-#   test:api
-#   package:master
-#   deploy:pre-release
-#   Release to pre release server.
-#
-# Production
-#   test:unit
-#   test:api
-#   package:master
-#   deploy:prod-001
-#   deploy:prod-002
-#   deploy:prod-003
-#   Release to production server.
-###################################################
 
 image: gengxiankun/build:latest
 
@@ -49,82 +15,13 @@ stages:
   - deploy
   - release
 
-before_script:
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh    
-    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+variables:
+  # SSH_PRIVATE_KEY: -----BEGIN RSA PRIVATE KEY----- ICXQAAKBgQDMREKHDss1L/xrmB9wzzkP44ubHvAiJm/9vVww -----END RSA PRIVATE KEY-----
+  SSH_SERVERS_TEST: root@134.175.29.187
+  SSH_SERVERS_PRE: root@172.16.64.3
+  SSH_SERVERS_PROD: root@172.16.64.10
 
-############## build ##############
-build:composer:
-  stage: build
-  before_script: []
-  dependencies: []
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    paths:
-      - vendor
-  script:
-    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
-    - composer dump-autoload --optimize
-
-############## test ##############
-.stage-test:
-  stage: test
-  before_script: []
-  dependencies: []
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - vendor
-
-codeview:phpcs:
-  extends: .stage-test
-  script:
-    - if [ ! -d "vendor" ]; then
-    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
-    - composer dump-autoload --optimize
-    - fi
-    - php vendor/bin/phpcs --standard=PSR2 --extensions=php --ignore=docs/,docker/,vendor/,console/migrations/,tests -w -n --colors ./
-  except:
-    - docs
-    - develop
-    - master
-    - tags
-
-codeview:phpmd:
-  extends: .stage-test
-  script:
-    - if [ ! -d "vendor" ]; then
-    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
-    - composer dump-autoload --optimize
-    - fi
-    - vendor/bin/phpmd admin,app,common,console,pc,h5 text phpmd.xml --exclude vendor/,console/migrations --suffixes php
-  except:
-    - docs
-    - develop
-    - master
-    - tags
-
-codeview:codequality:
-  extends: .stage-test
-  image: docker:latest
-  cache: {}
-  script:
-    - docker pull codeclimate/codeclimate
-    - VOLUME_PATH=/tmp/builds"$(echo $PWD | sed 's|^/[^/]*||')"
-    - docker run --env CODECLIMATE_CODE="$VOLUME_PATH" -v /tmp/cc:/tmp/cc -v $VOLUME_PATH:/code -v /var/run/docker.sock:/var/run/docker.sock codeclimate/codeclimate analyze -f text
-  except:
-    - docs
-    - tags
-    - develop
-    - master
-  allow_failure: true
-  when: manual
-
-test:unit:
-  extends: .stage-test
+.services: &services
   services:
     - name: mysql:5.6
       alias: mysql
@@ -136,17 +33,98 @@ test:unit:
     MYSQL_DATABASE: yiiplus
     MYSQL_USER: web
     MYSQL_PASSWORD: web
+
+############## build ##############
+build:composer:
+  stage: build
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+      - vendor
+  script:
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    - composer dump-autoload --optimize
+
+build:docker-cgi:
+  extends: .build-docker
+  script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWD http://$DOCKER_REGISTRY_URL
+    - docker build -t $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/cgi docker/files/cgi/
+    - docker push $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/cgi
+    - docker rm -f $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/cgi
+  only:
+    changes:
+      - docker/files/cgi/*
+
+build:docker-proxy:
+  extends: .build-docker
+  script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWD http://$DOCKER_REGISTRY_URL
+    - docker build -t $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/proxy docker/files/proxy/
+    - docker push $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/proxy
+    - docker rmi $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/proxy
+  only:
+    changes:
+      - docker/files/proxy/*
+
+build:docker-crond:
+  extends: .build-docker
+  script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWD http://$DOCKER_REGISTRY_URL
+    - docker build -t $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/crond docker/files/crond/
+    - docker push $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/crond
+    - docker rmi $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/crond
+  only:
+    changes:
+      - docker/files/crond/*
+
+############## test ##############
+codeview:phpcs:
+  extends: .stage-test
+  script:
+    - php vendor/bin/phpcs --standard=PSR2 --extensions=php --ignore=docs/,docker/,vendor/,console/migrations/,tests -w -n --colors ./
+  except:
+    refs:
+      - develop
+      - master
+      - tags
+
+codeview:phpmd:
+  extends: .stage-test
+  script:
+    - vendor/bin/phpmd admin,app,common,console,pc,h5 text phpmd.xml --exclude docs/,docker/,vendor/,console/migrations,tests --suffixes php
+  except:
+    refs:
+      - develop
+      - master
+      - tags
+
+codeview:codequality:
+  extends: .stage-test
+  image: docker:latest
+  cache: {}
+  before_script: []
+  script:
+    - docker pull codeclimate/codeclimate
+    - VOLUME_PATH=/tmp/builds"$(echo $PWD | sed 's|^/[^/]*||')"
+    - docker run --env CODECLIMATE_CODE="$VOLUME_PATH" -v /tmp/cc:/tmp/cc -v $VOLUME_PATH:/code -v /var/run/docker.sock:/var/run/docker.sock codeclimate/codeclimate analyze -f text
+  except:
+    refs:
+      - tags
+      - develop
+      - master
+  allow_failure: true
+  when: manual
+
+test:unit:
+  extends: .stage-test
+  <<: *services
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   script:
-    - echo '跳过...'
-  # script:
-  #   - if [ ! -d "vendor" ]; then
-  #   - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
-  #   - composer dump-autoload --optimize
-  #   - fi
-  #   - php init --env=Development --overwrite=y
-  #   - ./yii migrate/up --interactive=0
-  #   - ./vendor/bin/codecept run unit -c tests --coverage --no-colors
+    # - php init --env=Development --overwrite=y
+    # - ./yii migrate/up --interactive=0
+    # - ./vendor/bin/codecept run unit -c tests --coverage --no-colors
+    - echo 'test:unit...... ok.'
   # artifacts:
   #   name: "debug"
   #   when: on_failure
@@ -155,28 +133,13 @@ test:unit:
   #       - $CI_PROJECT_DIR/tests/_output
 test:api:
   extends: .stage-test
-  services:
-    - name: mysql:5.6
-      alias: mysql
-      command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-storage-engine=INNODB','--innodb_large_prefix=1','--innodb_file_format=Barracuda']
-    - name: redis:alpine
-      alias: redis
-  variables:
-    MYSQL_ROOT_PASSWORD: root
-    MYSQL_DATABASE: yiiplus
-    MYSQL_USER: web
-    MYSQL_PASSWORD: web
+  <<: *services
   script:
-    - echo '跳过...'
-  # script:
-  #   - if [ ! -d "vendor" ]; then
-  #   - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
-  #   - composer dump-autoload --optimize
-  #   - fi
-  #   - php init --env=Development --overwrite=y
-  #   - ./yii migrate/up --interactive=0
-  #   - php -S localhost:80 --docroot app/tests &>/dev/null&
-  #   - ./vendor/bin/codecept run app -c tests
+    # - php init --env=Development --overwrite=y
+    # - ./yii migrate/up --interactive=0
+    # - php -S localhost:80 --docroot app/tests &>/dev/null&
+    # - ./vendor/bin/codecept run app -c tests
+    - echo 'test:api...... ok.'
   # artifacts:
   #   name: "debug"
   #   when: on_failure
@@ -186,10 +149,146 @@ test:api:
   #     - $CI_PROJECT_DIR/tests/_output
 
 ############## package ##############
+package:develop:
+  extends: .stage-package
+  script:
+    - if [ ! -d "vendor" ]; then
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    - composer dump-autoload --optimize
+    - fi
+    - php init --env=Testing --overwrite=y
+  only:
+    - develop
+
+package:master:
+  extends: .stage-package
+  script:
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction --no-suggest --no-dev -vvv
+    - composer dump-autoload --optimize
+    - php init --env=Production --overwrite=y
+  only:
+    - master
+    - tags
+
+############## deploy ##############
+deploy:test:
+  extends: .stage-deploy
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_TEST}
+  dependencies:
+    - package:develop
+  only:
+    - develop
+
+deploy:pre:
+  extends: .stage-deploy
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_PRE}
+  only:
+    - master
+
+deploy:prod:
+  extends: .stage-deploy
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_PROD}
+
+############## release ##############
+release:test:
+  extends: .stage-release
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_TEST}
+  only:
+    refs:
+      - develop
+  environment:
+    name: testing
+
+release:pre:
+  extends: .stage-release
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_PRE}
+  only:
+    refs:
+      - master
+  environment:
+    name: pre
+
+release:prod:
+  extends: .stage-release
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_PROD}
+  only:
+    refs:
+      - tags
+  when: manual
+  environment:
+    name: production
+
+########## release docker ##########
+docker:test:
+  extends: .stage-release-docker
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_TEST}
+  only:
+    refs:
+      - develop
+  environment:
+    name: testing
+
+docker:pre:
+  extends: .stage-release-docker
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_PRE}
+  only:
+    refs:
+      - master
+  environment:
+    name: pre
+
+docker:prod:
+  extends: .stage-release-docker
+  variables:
+    SSH_SERVERS: ${SSH_SERVERS_PROD}
+  only:
+    refs:
+      - tags
+  when: manual
+  environment:
+    name: production
+
+############## Hidden Job ##############
+.build-docker:
+  stage: build
+  image: docker:latest
+  retry: 2
+  only:
+    refs:
+      - tags
+
+.stage-test:
+  stage: test
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - vendor
+  before_script:
+    - if [ ! -d "vendor" ]; then
+    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    - composer dump-autoload --optimize
+    - fi
+
 .stage-package:
   stage: package
-  before_script: []
-  dependencies: []
+  after_script:
+    - ./pc/fis3/build.sh
+    - ./h5/fis3/build.sh
+    - rm -rf console/runtime
+    - rm -rf admin/web/assets/* admin/runtime admin/tests
+    - rm -rf app/web/assets/* app/runtime app/tests
+    - rm -rf pc/web/assets/* pc/runtime pc/tests
+    - rm -rf h5/web/assets/* h5/runtime h5/tests
+    - rm -rf pc/fis3 h5/fis3
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
@@ -209,128 +308,66 @@ test:api:
       - h5
       - yii
       - docker-compose.yaml
-  except:
-    - docs
 
-package:develop:
-  extends: .stage-package
-  script:
-    - if [ ! -d "vendor" ]; then
-    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
-    - composer dump-autoload --optimize
-    - fi
-    - ./pc/fis3/build.sh
-    - ./h5/fis3/build.sh
-    - php init --env=Testing --overwrite=y
-    - rm -rf console/runtime
-    - rm -rf admin/web/assets/* admin/runtime admin/tests
-    - rm -rf app/web/assets/* app/runtime app/tests
-    - rm -rf pc/web/assets/* pc/runtime pc/tests
-    - rm -rf h5/web/assets/* h5/runtime h5/tests
-    - rm -rf pc/fis3 h5/fis3
-  only:
-    - develop
-
-package:master:
-  extends: .stage-package
-  script:
-    - composer install --prefer-dist --optimize-autoloader -n --no-interaction --no-suggest --no-dev -vvv
-    - composer dump-autoload --optimize
-    - ./pc/fis3/build.sh
-    - ./h5/fis3/build.sh
-    - php init --env=Production --overwrite=y
-    - rm -rf console/runtime
-    - rm -rf admin/web/assets/* admin/runtime admin/tests
-    - rm -rf app/web/assets/* app/runtime app/tests
-    - rm -rf pc/web/assets/* pc/runtime pc/tests
-    - rm -rf h5/web/assets/* h5/runtime h5/tests
-    - rm -rf pc/fis3 h5/fis3
-  only:
-    - master
-    - tags
-
-############## deploy ##############
 .stage-deploy:
   stage: deploy
   variables:
     GIT_STRATEGY: none
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh    
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   script:
     - if [ ! -d "vendor" ]; then
     - exit 1
     - fi
     - OLDIFS=$IFS;IFS=',';for SSH_SERVER in $SSH_SERVERS; do
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version ${CI_COMMIT_SHA} ${SSH_SERVER} transmission
+    - deploy -pn ${CI_PROJECT_NAME} -pv ${CI_COMMIT_SHA} ${SSH_SERVER} transmission
     - done;IFS=$OLDIFS
   dependencies:
     - package:master
-  except:
-    - docs
   only:
-    - tags
+    refs:
+      - tags
 
-deploy:test:
-  extends: .stage-deploy
-  variables:
-    GIT_STRATEGY: none
-    SSH_SERVERS: root@192.168.1.101
-  dependencies:
-    - package:develop
-  only:
-    - develop
-
-deploy:review:
-  extends: .stage-deploy
-  variables:
-    SSH_SERVERS: root@192.168.1.102
-  only:
-    - master
-
-deploy:prod-001:
-  extends: .stage-deploy
-  variables:
-    SSH_SERVERS: root@192.168.1.103
-
-# deploy:prod-002:
-#   extends: .stage-deploy
-#   variables:
-#     SSH_SERVERS: root@192.168.1.104
-
-############## release ##############
 .stage-release:
   stage: release
   variables:
     GIT_STRATEGY: none
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh    
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   script:
     - OLDIFS=$IFS;IFS=',';for SSH_SERVER in $SSH_SERVERS; do
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA ${SSH_SERVER} release
+    - deploy -pn ${CI_PROJECT_NAME} -pv $CI_COMMIT_SHA ${SSH_SERVER} release
     - done;IFS=$OLDIFS
   except:
-    - docs
+    changes:
+      - docker/files/cgi/*
+      - docker/files/proxy/*
+      - docker/files/crond/*
 
-release:testing:
-  extends: .stage-release
+.stage-release-docker:
+  stage: release
   variables:
-    SSH_SERVERS: root@192.168.1.101
+    GIT_STRATEGY: none
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh    
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  script:
+    - OLDIFS=$IFS;IFS=',';for SSH_SERVER in $SSH_SERVERS; do
+    - ssh $SSH_SERVER "docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWD http://${DOCKER_REGISTRY_URL}"
+    - ssh $SSH_SERVER "cd /data/website/$CI_PROJECT_NAME; docker-compose pull; docker-compose rm -fsva;"
+    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA ${SSH_SERVER} release
+    - ssh $SSH_SERVER "cd /data/website/$CI_PROJECT_NAME; docker-compose up -d"
+    - done;IFS=$OLDIFS
   only:
-    - develop
-  environment:
-    name: testing
-
-release:review:
-  extends: .stage-release
-  variables:
-    SSH_SERVERS: root@192.168.1.102
-  only:
-    - master
-  environment:
-    name: review
-
-release:production:
-  extends: .stage-release
-  variables:
-    SSH_SERVERS: root@192.168.1.103
-  only:
-    - tags
-  when: manual
-  environment:
-    name: production
+    changes:
+      - docker/files/cgi/*
+      - docker/files/proxy/*
+      - docker/files/crond/*

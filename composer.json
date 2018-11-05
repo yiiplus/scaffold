@@ -54,16 +54,16 @@
         "secure-http": false,
         "process-timeout": 3600
     },
-    "repositories": {
-        "yiiplus": {
+    "repositories":[
+        {
             "type": "composer",
             "url": "http://packagist.yiiplus.com"
         },
-        "packagist": {
+        {
             "type": "composer",
             "url": "https://packagist.laravel-china.org"
         }
-    },
+    ],
     "scripts": {
         "dev:install": [
             "php init --env=Development --overwrite=y",

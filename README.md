@@ -89,7 +89,7 @@ environments/            包含基于环境的覆盖
 - 基于容器化环境部署
 
     ```bash
-    # 首先，确认您安装了最新版本的 [Composer 资源插件](https://github.com/francoispluchino/composer-asset-plugin)：
+    # 首先，确认您安装了最新版本的 Composer 资源插件
     composer global require fxp/composer-asset-plugin ^1.4.2 -vvv
     
     # 并开启多进程并行下载，加快下载效率

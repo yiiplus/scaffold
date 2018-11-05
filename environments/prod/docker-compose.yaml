@@ -30,5 +30,5 @@ services:
         restart: always
         volumes:
             - ./:/www
-            - ./crontab/crontab:/etc/crontab
+            - ./console/crontab:/etc/crontab
         working_dir: /www

@@ -45,7 +45,8 @@ var define;
                     var tid = setTimeout(
                         function () {
                             onerror(id);
-                        }, require.timeout
+                        },
+                        require.timeout
                     );
 
                     script.onerror = function () {
@@ -59,8 +60,7 @@ var define;
 
                     if ('onload' in script) {
                         script.onload = onload;
-                    }
-                    else {
+                    } else {
                         script.onreadystatechange = function () {
                             if (this.readyState === 'loaded' || this.readyState === 'complete') {
                                 onload();
@@ -94,8 +94,7 @@ var define;
 
             if (pkg) {
                 url = pkgMap[pkg].url || pkgMap[pkg].uri;
-            }
-            else {
+            } else {
                 url = res.url || res.uri || id;
             }
 
@@ -170,7 +169,8 @@ var define;
         var needNum = 0;
         var needLoad = [];
 
-        function findNeed(depArr) {
+        function findNeed(depArr)
+        {
             var child;
 
             for (var i = 0, n = depArr.length; i < n; i++) {
@@ -204,7 +204,8 @@ var define;
             }
         }
 
-        function updateNeed() {
+        function updateNeed()
+        {
             if (0 === needNum--) {
                 var args = [];
                 for (var i = 0, n = names.length; i < n; i++) {
@@ -222,7 +223,8 @@ var define;
 
     require.ensure = function (names, callback) {
         require.async(
-            names, function () {
+            names,
+            function () {
                 callback && callback.call(this, require);
             }
         );
@@ -266,15 +268,13 @@ var define;
             var sty = document.createElement('style');
             sty.type = 'text/css';
 
-            if (sty.styleSheet) { // IE
+            if (sty.styleSheet) {
                 sty.styleSheet.cssText = cfg.content;
-            }
-            else {
+            } else {
                 sty.innerHTML = cfg.content;
             }
             head.appendChild(sty);
-        }
-        else if (cfg.url) {
+        } else if (cfg.url) {
             var link = document.createElement('link');
             link.href = cfg.url;
             link.rel = 'stylesheet';

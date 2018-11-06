@@ -4,14 +4,16 @@ fis.set('namespace', 'common');
 fis.set('project.ignore', ['node_modules/**', 'output/**', 'fis-conf.js', '*.bak', '*.psd']);
 
 fis.match(
-    '/widget/**/*', {
+    '/widget/**/*',
+    {
         isMod: true
     }
 );
 
 // 开发环境
 fis.media('dev').match(
-    '*', {
+    '*',
+    {
         useHash: false,
         optimizer: null
     }
@@ -19,34 +21,40 @@ fis.media('dev').match(
 
 // 生产环境
 fis.media('prod').match(
-    '*', {
+    '*',
+    {
         url:'/static/${namespace}$0',
-        release: 'web/${static}/${namespace}/$0' 
+        release: 'web/${static}/${namespace}/$0'
     }
 );
 fis.media('prod').match(
-    '${namespace}-map.json', {
+    '${namespace}-map.json',
+    {
         release: '/config/fis/$0'
     }
 );
 fis.media('prod').match(
-    '/{plugin,test,smarty.conf,domain.conf,**.php}', {
+    '/{plugin,test,smarty.conf,domain.conf,**.php}',
+    {
         release: false
     }
 );
 
 fis.media('prod').match(
-    '::image', {
+    '::image',
+    {
         useHash: true
     }
 );
 fis.media('prod').match(
-    '*.{js,css,less}', {
+    '*.{js,css,less}',
+    {
         useHash: true
     }
 );
 fis.media('prod').match(
-    'favicon.ico', {
+    'favicon.ico',
+    {
         release: 'web/$0',
         useHash: false
     }
@@ -54,7 +62,8 @@ fis.media('prod').match(
 
 // tpl配置
 fis.media('prod').match(
-    '*.tpl', {
+    '*.tpl',
+    {
         preprocessor: fis.plugin('extlang'),
         postprocessor: fis.plugin('require-async'),
         optimizer: [
@@ -66,72 +75,86 @@ fis.media('prod').match(
     }
 );
 fis.media('prod').match(
-    '/page/**.tpl', {
-        extras: {
+    '/page/**.tpl',
+    {
+        extras:
+        {
             isPage: true
         }
     }
 );
 fis.media('prod').match(
-    '/(widget/**.tpl)', {
+    '/(widget/**.tpl)',
+    {
         url: '${namespace}/$1',
     }
 );
 
 // 静态资源配置
 fis.media('prod').match(
-    '*.js', {
+    '*.js',
+    {
         optimizer: fis.plugin(
-            'uglify-js', {
-                mangle: {
+            'uglify-js',
+            {
+                mangle:
+                {
                     expect: ['require', 'define', 'some string'] //不想被压的
                 }
             }
-        ),
-    parser: fis.plugin(
-        'jdists', {
-            remove: "debug"
-        }
-    )
-    }
-);
-fis.media('prod').match(
-    '*.css', {
-        optimizer: fis.plugin(
-            'clean-css', {
-                'keepBreaks': true 
+        ), parser: fis.plugin(
+            'jdists',
+            {
+                remove: "debug"
             }
-        ),
-    useSprite: true
+        )
     }
 );
 fis.media('prod').match(
-    '*.png', {
+    '*.css',
+    {
         optimizer: fis.plugin(
-            'png-compressor',{
+            'clean-css',
+            {
+                'keepBreaks': true
+            }
+        ), useSprite: true
+    }
+);
+fis.media('prod').match(
+    '*.png',
+    {
+        optimizer: fis.plugin(
+            'png-compressor',
+            {
+
             }
         )
     }
 );
 
 fis.media('prod').match(
-    '*.{tpl,js}', {
+    '*.{tpl,js}',
+    {
         useSameNameRequire: true
     }
 );
 
 fis.media('prod').match(
-    'static/mod.js', {
+    'static/mod.js',
+    {
         packOrder: -100
     }
 );
 
 // 雪碧图配置
 fis.media('prod').match(
-    '::package', {
+    '::package',
+    {
         packager: fis.plugin('map'),
         spriter: fis.plugin(
-            'csssprites', {
+            'csssprites',
+            {
                 layout: 'matrix',
                 margin: '15'
             }

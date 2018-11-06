@@ -4,7 +4,8 @@ fis.set('namespace', 'layouts');
 
 // 开发模式
 fis.media('dev').match(
-    '*', {
+    '*',
+    {
         useHash: false,
         optimizer: null
     }
@@ -12,19 +13,22 @@ fis.media('dev').match(
 
 // 生产环境
 fis.media('prod').match(
-    '${namespace}-map.json', {
+    '${namespace}-map.json',
+    {
         release: '/config/fis/$0'
     }
 );
 // 不进行编译的
 fis.media('prod').match(
-    '/{plugin,test,smarty.conf,domain.conf,**.php}', {
+    '/{plugin,test,smarty.conf,domain.conf,**.php}',
+    {
         release: false
     }
 );
 
 fis.media('prod').match(
-    'main.php', {
+    'main.php',
+    {
         useHash: false,
         optimizer: null,
         release: '/views/${namespace}/$0'
@@ -33,10 +37,13 @@ fis.media('prod').match(
 
 fis.config.merge(
     {
-        settings : {
-            postprocessor : {
-                jswrapper : {
-                    type : 'amd',
+        settings :
+        {
+            postprocessor:
+            {
+                jswrapper:
+                {
+                    type: 'amd',
                     wrapAll : true
                 }
             }

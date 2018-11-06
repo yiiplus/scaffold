@@ -85,7 +85,7 @@ build:docker-crond:
 codeview:phpcs:
   extends: .stage-test
   script:
-    - php vendor/bin/phpcs --standard=PSR2 --extensions=php --ignore=docs/,docker/,vendor/,console/migrations/,tests -w -n --colors ./
+    - php vendor/bin/phpcs --standard=PSR2 --ignore=docs/,docker/,vendor/,console/migrations/,tests -n --colors ./
   except:
     refs:
       - develop
@@ -95,7 +95,7 @@ codeview:phpcs:
 codeview:phpmd:
   extends: .stage-test
   script:
-    - vendor/bin/phpmd admin,app,common,console,pc,h5 text phpmd.xml --exclude docs/,docker/,vendor/,console/migrations,tests --suffixes php
+    - php vendor/bin/phpmd admin,app,common,console,pc,h5 text phpmd.xml --exclude docs/,docker/,vendor/,console/migrations,tests
   except:
     refs:
       - develop
@@ -268,6 +268,15 @@ release:prod:
 .stage-package:
   stage: package
   after_script:
+    - if [ -n "$CI_COMMIT_TAG" ]; then docker_env='prod'; elif [ "$CI_COMMIT_REF_NAME" == 'master' ]; then docker_env='pre'; else docker_env='test'; fi 
+    - echo $docker_env
+    - sed -i "s/docker_env/${docker_env}/g" docker-compose.yaml
+    - sed -i "s/registry_url/${DOCKER_REGISTRY_URL}/g" docker-compose.yaml
+    - sed -i "s/project_name/${CI_PROJECT_NAME}/g" docker-compose.yaml
+    - sed -i "s#website_path#${WEBSITE_PATH}#g" docker-compose.yaml
+    - sed -i "s#runtime_path#${RUNTIME_PATH}#g" docker-compose.yaml
+    - sed -i "s#http_port#${HTTP_PORT}#g" docker-compose.yaml
+    - sed -i "s#https_port#${HTTPS_PORT}#g" docker-compose.yaml
     - ./pc/fis3/build.sh
     - ./h5/fis3/build.sh
     - rm -rf console/runtime
@@ -311,15 +320,6 @@ release:prod:
     - ssh-add <(echo "${SSH_PRIVATE_KEY}")
     - mkdir -p ~/.ssh    
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - if [ -n "$CI_COMMIT_TAG" ]; then docker_env='prod'; elif [ "$CI_COMMIT_REF_NAME" == 'master' ]; then docker_env='pre'; else docker_env='test'; fi 
-    - echo $docker_env
-    - sed -i "s/docker_env/${docker_env}/g" docker-compose.yaml
-    - sed -i "s/registry_url/${DOCKER_REGISTRY_URL}/g" docker-compose.yaml
-    - sed -i "s/project_name/${CI_PROJECT_NAME}/g" docker-compose.yaml
-    - sed -i "s#website_path#${WEBSITE_PATH}#g" docker-compose.yaml
-    - sed -i "s#runtime_path#${RUNTIME_PATH}#g" docker-compose.yaml
-    - sed -i "s#http_port#${HTTP_PORT}#g" docker-compose.yaml
-    - sed -i "s#https_port#${HTTPS_PORT}#g" docker-compose.yaml
     - OLDIFS=$IFS;IFS=',';for SSH_SERVER in ${SSH_SERVERS}; do
     -   ssh ${SSH_SERVER} "mkdir -vp ${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA}"
     -   scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false -r ./ ${SSH_SERVER}:${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA}

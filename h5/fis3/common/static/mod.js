@@ -1,5 +1,5 @@
 /**
- * @file: mod.js
+ * @file:  mod.js
  * @author fis
  * ver: 1.0.13
  * update: 2016/01/27

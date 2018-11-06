@@ -4,6 +4,17 @@
 # YiiPlus Scaffold
 # Application  [common console admin app pc h5]
 # Environments [Development Testing Production]
+# 
+# 系统定义变量
+#   SSH_PRIVATE_KEY           私钥（免密登录）
+#   SSH_SERVERS_TEST          测试服务器（root@192.168.1.101）
+#   SSH_SERVERS_PRE           预发布服务器（root@192.168.1.102）
+#   SSH_SERVERS_PROD          生产服务器（root@192.168.1.103）
+#   DOCKER_REGISTRY_URL       Docker仓库地址
+#   DOCKER_REGISTRY_USER      Docker仓库用户名
+#   DOCKER_REGISTRY_PASSWD    Docker仓库密码
+#   HTTP_PORT                 http 端口 (8081)
+#   HTTPS_PORT                https 端口 (4431)
 ###################################################
 
 image: gengxiankun/build:latest
@@ -16,10 +27,9 @@ stages:
   - release
 
 variables:
-  # SSH_PRIVATE_KEY: -----BEGIN RSA PRIVATE KEY----- ICXQAAKBgQDMREKHDss1L/xrmB9wzzkP44ubHvAiJm/9vVww -----END RSA PRIVATE KEY-----
-  SSH_SERVERS_TEST: root@134.175.29.187
-  SSH_SERVERS_PRE: root@172.16.64.3
-  SSH_SERVERS_PROD: root@172.16.64.10
+  BUILD_PATH: /data/build_release/
+  WEBSITE_PATH: /data/website/
+  KEEP_VERSION_NUM: 10
 
 .services: &services
   services:
@@ -37,43 +47,36 @@ variables:
 ############## build ##############
 build:composer:
   stage: build
+  retry: 2
   cache:
-    key: "$CI_COMMIT_REF_NAME"
+    key: "${CI_COMMIT_REF_NAME}"
     paths:
       - vendor
   script:
+    - echo $docker_env
     - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
     - composer dump-autoload --optimize
 
 build:docker-cgi:
   extends: .build-docker
-  script:
-    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWD http://$DOCKER_REGISTRY_URL
-    - docker build -t $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/cgi docker/files/cgi/
-    - docker push $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/cgi
-    - docker rm -f $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/cgi
+  variables:
+    DOCKER_NAME: cgi
   only:
     changes:
       - docker/files/cgi/*
 
 build:docker-proxy:
   extends: .build-docker
-  script:
-    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWD http://$DOCKER_REGISTRY_URL
-    - docker build -t $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/proxy docker/files/proxy/
-    - docker push $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/proxy
-    - docker rmi $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/proxy
+  variables:
+    DOCKER_NAME: proxy
   only:
     changes:
       - docker/files/proxy/*
 
 build:docker-crond:
   extends: .build-docker
-  script:
-    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWD http://$DOCKER_REGISTRY_URL
-    - docker build -t $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/crond docker/files/crond/
-    - docker push $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/crond
-    - docker rmi $DOCKER_REGISTRY_URL/$CI_PROJECT_NAME/crond
+  variables:
+    DOCKER_NAME: crond
   only:
     changes:
       - docker/files/crond/*
@@ -116,49 +119,48 @@ codeview:codequality:
   allow_failure: true
   when: manual
 
-test:unit:
-  extends: .stage-test
-  <<: *services
-  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
-  script:
-    # - php init --env=Development --overwrite=y
-    # - ./yii migrate/up --interactive=0
-    # - ./vendor/bin/codecept run unit -c tests --coverage --no-colors
-    - echo 'test:unit...... ok.'
-  # artifacts:
-  #   name: "debug"
-  #   when: on_failure
-  #   untracked: true
-  #   paths:
-  #       - $CI_PROJECT_DIR/tests/_output
-test:api:
-  extends: .stage-test
-  <<: *services
-  script:
-    # - php init --env=Development --overwrite=y
-    # - ./yii migrate/up --interactive=0
-    # - php -S localhost:80 --docroot app/tests &>/dev/null&
-    # - ./vendor/bin/codecept run app -c tests
-    - echo 'test:api...... ok.'
-  # artifacts:
-  #   name: "debug"
-  #   when: on_failure
-  #   untracked: true
-  #   paths:
-  #     - $CI_PROJECT_DIR/app/runtime
-  #     - $CI_PROJECT_DIR/tests/_output
+# test:unit:
+#   extends: .stage-test
+#   <<: *services
+#   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+#   script:
+#     - php init --env=Development --overwrite=y
+#     - ./yii migrate/up --interactive=0
+#     - ./vendor/bin/codecept run unit -c tests --coverage --no-colors
+#   artifacts:
+#     name: "debug"
+#     when: on_failure
+#     untracked: true
+#     paths:
+#         - ${CI_PROJECT_DIR}/tests/_output
+# test:api:
+#   extends: .stage-test
+#   <<: *services
+#   script:
+#     - php init --env=Development --overwrite=y
+#     - ./yii migrate/up --interactive=0
+#     - php -S localhost:80 --docroot app/tests &>/dev/null&
+#     - ./vendor/bin/codecept run app -c tests
+#   artifacts:
+#     name: "debug"
+#     when: on_failure
+#     untracked: true
+#     paths:
+#       - ${CI_PROJECT_DIR}/app/runtime
+#       - ${CI_PROJECT_DIR}/tests/_output
 
 ############## package ##############
 package:develop:
   extends: .stage-package
   script:
     - if [ ! -d "vendor" ]; then
-    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
-    - composer dump-autoload --optimize
+    -   composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    -   composer dump-autoload --optimize
     - fi
-    - php init --env=Testing --overwrite=y
+    - php init --env=Test --overwrite=y
   only:
-    - develop
+    refs:
+      - develop
 
 package:master:
   extends: .stage-package
@@ -167,8 +169,9 @@ package:master:
     - composer dump-autoload --optimize
     - php init --env=Production --overwrite=y
   only:
-    - master
-    - tags
+    refs:
+      - master
+      - tags
 
 ############## deploy ##############
 deploy:test:
@@ -178,20 +181,28 @@ deploy:test:
   dependencies:
     - package:develop
   only:
-    - develop
+    refs:
+      - develop
 
 deploy:pre:
   extends: .stage-deploy
   variables:
     SSH_SERVERS: ${SSH_SERVERS_PRE}
+  dependencies:
+    - package:master
   only:
-    - master
+    refs:
+      - master
 
 deploy:prod:
   extends: .stage-deploy
   variables:
     SSH_SERVERS: ${SSH_SERVERS_PROD}
-
+  dependencies:
+    - package:master
+  only:
+    refs:
+      - tags
 ############## release ##############
 release:test:
   extends: .stage-release
@@ -224,58 +235,34 @@ release:prod:
   environment:
     name: production
 
-########## release docker ##########
-docker:test:
-  extends: .stage-release-docker
-  variables:
-    SSH_SERVERS: ${SSH_SERVERS_TEST}
-  only:
-    refs:
-      - develop
-  environment:
-    name: testing
-
-docker:pre:
-  extends: .stage-release-docker
-  variables:
-    SSH_SERVERS: ${SSH_SERVERS_PRE}
-  only:
-    refs:
-      - master
-  environment:
-    name: pre
-
-docker:prod:
-  extends: .stage-release-docker
-  variables:
-    SSH_SERVERS: ${SSH_SERVERS_PROD}
-  only:
-    refs:
-      - tags
-  when: manual
-  environment:
-    name: production
-
 ############## Hidden Job ##############
 .build-docker:
   stage: build
   image: docker:latest
   retry: 2
+  script:
+    - if [ -n "$CI_COMMIT_TAG" ]; then docker_env='prod'; elif [ "$CI_COMMIT_REF_NAME" == 'master' ]; then docker_env='pre'; else docker_env='test'; fi 
+    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWD} http://${DOCKER_REGISTRY_URL}
+    - docker build -t ${DOCKER_REGISTRY_URL}/${CI_PROJECT_NAME}/${docker_env}/${DOCKER_NAME} docker/files/${DOCKER_NAME}/
+    - docker push ${DOCKER_REGISTRY_URL}/${CI_PROJECT_NAME}/${docker_env}/${DOCKER_NAME}
+    - docker rmi ${DOCKER_REGISTRY_URL}/${CI_PROJECT_NAME}/${docker_env}/${DOCKER_NAME}
   only:
     refs:
+      - develop
+      - master
       - tags
 
 .stage-test:
   stage: test
   cache:
-    key: "$CI_COMMIT_REF_NAME"
+    key: "${CI_COMMIT_REF_NAME}"
     policy: pull
     paths:
       - vendor
   before_script:
     - if [ ! -d "vendor" ]; then
-    - composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
-    - composer dump-autoload --optimize
+    -   composer install --prefer-dist --optimize-autoloader -n --no-interaction  --no-suggest -vvv
+    -   composer dump-autoload --optimize
     - fi
 
 .stage-package:
@@ -290,12 +277,12 @@ docker:prod:
     - rm -rf h5/web/assets/* h5/runtime h5/tests
     - rm -rf pc/fis3 h5/fis3
   cache:
-    key: "$CI_COMMIT_REF_NAME"
+    key: "${CI_COMMIT_REF_NAME}"
     policy: pull
     paths:
       - vendor
   artifacts:
-    name: "$CI_PROJECT_NAME"
+    name: "${CI_PROJECT_NAME}"
     untracked: false
     paths:
       - docker
@@ -308,66 +295,52 @@ docker:prod:
       - h5
       - yii
       - docker-compose.yaml
+      - crontab
 
 .stage-deploy:
   stage: deploy
   variables:
     GIT_STRATEGY: none
-  before_script:
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh    
-    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    RUNTIME_PATH: /data/runtime/
+    RUNTIME_APPS: admin,app,console,crontab,pc,h5
   script:
     - if [ ! -d "vendor" ]; then
-    - exit 1
+    -   exit 1
     - fi
-    - OLDIFS=$IFS;IFS=',';for SSH_SERVER in $SSH_SERVERS; do
-    - deploy -pn ${CI_PROJECT_NAME} -pv ${CI_COMMIT_SHA} ${SSH_SERVER} transmission
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "${SSH_PRIVATE_KEY}")
+    - mkdir -p ~/.ssh    
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - if [ -n "$CI_COMMIT_TAG" ]; then docker_env='prod'; elif [ "$CI_COMMIT_REF_NAME" == 'master' ]; then docker_env='pre'; else docker_env='test'; fi 
+    - echo $docker_env
+    - sed -i "s/docker_env/${docker_env}/g" docker-compose.yaml
+    - sed -i "s/registry_url/${DOCKER_REGISTRY_URL}/g" docker-compose.yaml
+    - sed -i "s/project_name/${CI_PROJECT_NAME}/g" docker-compose.yaml
+    - sed -i "s#website_path#${WEBSITE_PATH}#g" docker-compose.yaml
+    - sed -i "s#runtime_path#${RUNTIME_PATH}#g" docker-compose.yaml
+    - sed -i "s#http_port#${HTTP_PORT}#g" docker-compose.yaml
+    - sed -i "s#https_port#${HTTPS_PORT}#g" docker-compose.yaml
+    - OLDIFS=$IFS;IFS=',';for SSH_SERVER in ${SSH_SERVERS}; do
+    -   ssh ${SSH_SERVER} "mkdir -vp ${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA}"
+    -   scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false -r ./ ${SSH_SERVER}:${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA}
+    -   ssh -T -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false ${SSH_SERVER} "cd ${BUILD_PATH}${CI_PROJECT_NAME}/ && ls -1rt | tac | awk 'FNR > ${KEEP_VERSION_NUM}  {print(\$1);}' | xargs -i rm -rf {}"
+    -   OLDIFS=$IFS;IFS=',';for i in ${RUNTIME_APPS}; do
+    -     ssh ${SSH_SERVER} "if [ ! -d \"${RUNTIME_PATH}${CI_PROJECT_NAME}/${i}\" ]; then mkdir -vp ${RUNTIME_PATH}${CI_PROJECT_NAME}/${i}/runtime/logs; chmod -R 755 ${RUNTIME_PATH}${CI_PROJECT_NAME}/${i}/runtime/; fi && ln -sfn ${RUNTIME_PATH}${CI_PROJECT_NAME}/${i}/runtime ${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA}/${i}/"
+    -   done;IFS=$OLDIFS
     - done;IFS=$OLDIFS
-  dependencies:
-    - package:master
-  only:
-    refs:
-      - tags
 
 .stage-release:
   stage: release
   variables:
     GIT_STRATEGY: none
-  before_script:
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh    
-    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   script:
-    - OLDIFS=$IFS;IFS=',';for SSH_SERVER in $SSH_SERVERS; do
-    - deploy -pn ${CI_PROJECT_NAME} -pv $CI_COMMIT_SHA ${SSH_SERVER} release
-    - done;IFS=$OLDIFS
-  except:
-    changes:
-      - docker/files/cgi/*
-      - docker/files/proxy/*
-      - docker/files/crond/*
-
-.stage-release-docker:
-  stage: release
-  variables:
-    GIT_STRATEGY: none
-  before_script:
     - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh    
+    - ssh-add <(echo "${SSH_PRIVATE_KEY}")
+    - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  script:
-    - OLDIFS=$IFS;IFS=',';for SSH_SERVER in $SSH_SERVERS; do
-    - ssh $SSH_SERVER "docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWD http://${DOCKER_REGISTRY_URL}"
-    - ssh $SSH_SERVER "cd /data/website/$CI_PROJECT_NAME; docker-compose pull; docker-compose rm -fsva;"
-    - deploy --project-name ${CI_PROJECT_NAME} --project-version $CI_COMMIT_SHA ${SSH_SERVER} release
-    - ssh $SSH_SERVER "cd /data/website/$CI_PROJECT_NAME; docker-compose up -d"
+    - OLDIFS=$IFS;IFS=',';for SSH_SERVER in ${SSH_SERVERS}; do
+    -   ssh ${SSH_SERVER} "docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWD} http://${DOCKER_REGISTRY_URL}"
+    -   ssh ${SSH_SERVER} "if [ -d \"${WEBSITE_PATH}${CI_PROJECT_NAME}\" ]; then cd ${WEBSITE_PATH}${CI_PROJECT_NAME}; docker-compose pull; docker-compose rm -fsva; fi"
+    -   ssh ${SSH_SERVER} "if [ ! -d \"${WEBSITE_PATH}\" ]; then mkdir -vp ${WEBSITE_PATH}; fi && ln -sfn ${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA} ${BUILD_PATH}${CI_PROJECT_NAME}/current-${CI_PROJECT_NAME}.tmp && mv -fT ${BUILD_PATH}${CI_PROJECT_NAME}/current-${CI_PROJECT_NAME}.tmp ${WEBSITE_PATH}${CI_PROJECT_NAME}"
+    -   ssh ${SSH_SERVER} "cd ${WEBSITE_PATH}${CI_PROJECT_NAME}; docker-compose pull; docker-compose up --force-recreate -d"
     - done;IFS=$OLDIFS
-  only:
-    changes:
-      - docker/files/cgi/*
-      - docker/files/proxy/*
-      - docker/files/crond/*

@@ -7,10 +7,10 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
-./vendor/bin/phpmd admin,app,common,console,pc,h5 text phpmd.xml --exclude docs/,docker/,vendor/,console/migrations,tests
+./vendor/bin/phpmd admin,app,common,console,pc,h5 text phpmd.xml --exclude docs/,docker/,vendor/,console/migrations,tests,admin/runtime/,app/runtime/,console/runtime/,pc/runtime/,h5/runtime/
 exit $?
 
-./vendor/bin/phpcs --standard=PSR2 --ignore=docs/,docker/,vendor/,console/migrations/,tests -w -n --colors ./
+./vendor/bin/phpcs --standard=PSR1,PSR2,PEAR --ignore=docs/,docker/,vendor/,console/migrations/,tests,admin/runtime/,app/runtime/,console/runtime/,pc/runtime/,h5/runtime/ -n --colors ./
 exit $?
 
 if git rev-parse --verify HEAD >/dev/null 2>&1

@@ -86,7 +86,7 @@ build:docker-crond:
 codeview:phpcs:
   extends: .stage-test
   script:
-    - php vendor/bin/phpcs --standard=PSR2 --ignore=docs/,docker/,vendor/,console/migrations/,tests -w --colors ./
+    - php vendor/bin/phpcs --standard=PSR1,PSR2,PEAR --ignore=docs/,docker/,vendor/,console/migrations/,tests -n --colors ./
   except:
     refs:
       - develop

@@ -1,10 +1,3 @@
-/**
- * @file:  mod.js
- * @author fis
- * ver: 1.0.13
- * update: 2016/01/27
- * https://github.com/fex-team/mod
- */
 var require;
 
 /* eslint-disable no-unused-vars */

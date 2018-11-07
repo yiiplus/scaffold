@@ -29,6 +29,7 @@ stages:
 variables:
   BUILD_PATH: /data/build_release/
   WEBSITE_PATH: /data/website/
+  RUNTIME_PATH: /data/runtime/
   KEEP_VERSION_NUM: 10
 
 .services: &services
@@ -85,7 +86,7 @@ build:docker-crond:
 codeview:phpcs:
   extends: .stage-test
   script:
-    - php vendor/bin/phpcs --standard=PSR2 --ignore=docs/,docker/,vendor/,console/migrations/,tests -n --colors ./
+    - php vendor/bin/phpcs --standard=PSR2 --ignore=docs/,docker/,vendor/,console/migrations/,tests -w --colors ./
   except:
     refs:
       - develop
@@ -231,7 +232,6 @@ release:prod:
   only:
     refs:
       - tags
-  when: manual
   environment:
     name: production
 
@@ -243,9 +243,9 @@ release:prod:
   script:
     - if [ -n "$CI_COMMIT_TAG" ]; then docker_env='prod'; elif [ "$CI_COMMIT_REF_NAME" == 'master' ]; then docker_env='pre'; else docker_env='test'; fi 
     - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWD} http://${DOCKER_REGISTRY_URL}
-    - docker build -t ${DOCKER_REGISTRY_URL}/${CI_PROJECT_NAME}/${docker_env}/${DOCKER_NAME} docker/files/${DOCKER_NAME}/
-    - docker push ${DOCKER_REGISTRY_URL}/${CI_PROJECT_NAME}/${docker_env}/${DOCKER_NAME}
-    - docker rmi ${DOCKER_REGISTRY_URL}/${CI_PROJECT_NAME}/${docker_env}/${DOCKER_NAME}
+    - docker build -t ${DOCKER_REGISTRY_URL}/${CI_PROJECT_PATH}/${docker_env}/${DOCKER_NAME} docker/files/${DOCKER_NAME}/
+    - docker push ${DOCKER_REGISTRY_URL}/${CI_PROJECT_PATH}/${docker_env}/${DOCKER_NAME}
+    - docker rmi ${DOCKER_REGISTRY_URL}/${CI_PROJECT_PATH}/${docker_env}/${DOCKER_NAME}
   only:
     refs:
       - develop
@@ -270,13 +270,15 @@ release:prod:
   after_script:
     - if [ -n "$CI_COMMIT_TAG" ]; then docker_env='prod'; elif [ "$CI_COMMIT_REF_NAME" == 'master' ]; then docker_env='pre'; else docker_env='test'; fi 
     - echo $docker_env
-    - sed -i "s/docker_env/${docker_env}/g" docker-compose.yaml
-    - sed -i "s/registry_url/${DOCKER_REGISTRY_URL}/g" docker-compose.yaml
-    - sed -i "s/project_name/${CI_PROJECT_NAME}/g" docker-compose.yaml
-    - sed -i "s#website_path#${WEBSITE_PATH}#g" docker-compose.yaml
-    - sed -i "s#runtime_path#${RUNTIME_PATH}#g" docker-compose.yaml
-    - sed -i "s#http_port#${HTTP_PORT}#g" docker-compose.yaml
-    - sed -i "s#https_port#${HTTPS_PORT}#g" docker-compose.yaml
+    - sed -i "s#<docker_env>#${docker_env}#g" docker-compose.yaml
+    - sed -i "s#<registry_url>#${DOCKER_REGISTRY_URL}#g" docker-compose.yaml
+    - sed -i "s#<project_path>#${CI_PROJECT_PATH}#g" docker-compose.yaml
+    - sed -i "s#<project_name>#${CI_PROJECT_NAME}#g" docker-compose.yaml
+    - sed -i "s#<project_namespace>#${CI_PROJECT_NAMESPACE}#g" docker-compose.yaml
+    - sed -i "s#<website_path>#${WEBSITE_PATH}#g" docker-compose.yaml
+    - sed -i "s#<runtime_path>#${RUNTIME_PATH}#g" docker-compose.yaml
+    - sed -i "s#<http_port>#${HTTP_PORT}#g" docker-compose.yaml
+    - sed -i "s#<https_port>#${HTTPS_PORT}#g" docker-compose.yaml
     - ./pc/fis3/build.sh
     - ./h5/fis3/build.sh
     - rm -rf console/runtime
@@ -294,7 +296,7 @@ release:prod:
     name: "${CI_PROJECT_NAME}"
     untracked: false
     paths:
-      - docker
+      - manifests
       - vendor
       - common
       - console
@@ -310,7 +312,6 @@ release:prod:
   stage: deploy
   variables:
     GIT_STRATEGY: none
-    RUNTIME_PATH: /data/runtime/
     RUNTIME_APPS: admin,app,console,crontab,pc,h5
   script:
     - if [ ! -d "vendor" ]; then
@@ -321,11 +322,11 @@ release:prod:
     - mkdir -p ~/.ssh    
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - OLDIFS=$IFS;IFS=',';for SSH_SERVER in ${SSH_SERVERS}; do
-    -   ssh ${SSH_SERVER} "mkdir -vp ${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA}"
-    -   scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false -r ./ ${SSH_SERVER}:${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA}
-    -   ssh -T -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false ${SSH_SERVER} "cd ${BUILD_PATH}${CI_PROJECT_NAME}/ && ls -1rt | tac | awk 'FNR > ${KEEP_VERSION_NUM}  {print(\$1);}' | xargs -i rm -rf {}"
+    -   ssh ${SSH_SERVER} "mkdir -vp ${BUILD_PATH}${CI_PROJECT_PATH}/${CI_COMMIT_SHA}"
+    -   scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false -r ./ ${SSH_SERVER}:${BUILD_PATH}${CI_PROJECT_PATH}/${CI_COMMIT_SHA}
+    -   ssh -T -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false ${SSH_SERVER} "cd ${BUILD_PATH}${CI_PROJECT_PATH}/ && ls -1rt | tac | awk 'FNR > ${KEEP_VERSION_NUM}  {print(\$1);}' | xargs -i rm -rf {}"
     -   OLDIFS=$IFS;IFS=',';for i in ${RUNTIME_APPS}; do
-    -     ssh ${SSH_SERVER} "if [ ! -d \"${RUNTIME_PATH}${CI_PROJECT_NAME}/${i}\" ]; then mkdir -vp ${RUNTIME_PATH}${CI_PROJECT_NAME}/${i}/runtime/logs; chmod -R 755 ${RUNTIME_PATH}${CI_PROJECT_NAME}/${i}/runtime/; fi && ln -sfn ${RUNTIME_PATH}${CI_PROJECT_NAME}/${i}/runtime ${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA}/${i}/"
+    -     ssh ${SSH_SERVER} "if [ ! -d \"${RUNTIME_PATH}${CI_PROJECT_PATH}/${i}\" ]; then mkdir -vp ${RUNTIME_PATH}${CI_PROJECT_PATH}/${i}/runtime/logs; chmod -R 777 ${RUNTIME_PATH}${CI_PROJECT_PATH}/${i}/runtime/; fi && ln -sfn ${RUNTIME_PATH}${CI_PROJECT_PATH}/${i}/runtime ${BUILD_PATH}${CI_PROJECT_PATH}/${CI_COMMIT_SHA}/${i}/"
     -   done;IFS=$OLDIFS
     - done;IFS=$OLDIFS
 
@@ -333,6 +334,7 @@ release:prod:
   stage: release
   variables:
     GIT_STRATEGY: none
+  dependencies: []
   script:
     - eval $(ssh-agent -s)
     - ssh-add <(echo "${SSH_PRIVATE_KEY}")
@@ -340,7 +342,7 @@ release:prod:
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - OLDIFS=$IFS;IFS=',';for SSH_SERVER in ${SSH_SERVERS}; do
     -   ssh ${SSH_SERVER} "docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWD} http://${DOCKER_REGISTRY_URL}"
-    -   ssh ${SSH_SERVER} "if [ -d \"${WEBSITE_PATH}${CI_PROJECT_NAME}\" ]; then cd ${WEBSITE_PATH}${CI_PROJECT_NAME}; docker-compose pull; docker-compose rm -fsva; fi"
-    -   ssh ${SSH_SERVER} "if [ ! -d \"${WEBSITE_PATH}\" ]; then mkdir -vp ${WEBSITE_PATH}; fi && ln -sfn ${BUILD_PATH}${CI_PROJECT_NAME}/${CI_COMMIT_SHA} ${BUILD_PATH}${CI_PROJECT_NAME}/current-${CI_PROJECT_NAME}.tmp && mv -fT ${BUILD_PATH}${CI_PROJECT_NAME}/current-${CI_PROJECT_NAME}.tmp ${WEBSITE_PATH}${CI_PROJECT_NAME}"
-    -   ssh ${SSH_SERVER} "cd ${WEBSITE_PATH}${CI_PROJECT_NAME}; docker-compose pull; docker-compose up --force-recreate -d"
+    -   ssh ${SSH_SERVER} "if [ -d \"${WEBSITE_PATH}${CI_PROJECT_PATH}\" ]; then cd ${WEBSITE_PATH}${CI_PROJECT_PATH}; docker-compose pull; docker-compose rm -fsva; fi"
+    -   ssh ${SSH_SERVER} "if [ ! -d \"${WEBSITE_PATH}${CI_PROJECT_NAMESPACE}\" ]; then mkdir -vp ${WEBSITE_PATH}${CI_PROJECT_NAMESPACE}; fi && ln -sfn ${BUILD_PATH}${CI_PROJECT_PATH}/${CI_COMMIT_SHA} ${BUILD_PATH}${CI_PROJECT_PATH}/current-${CI_PROJECT_NAME}.tmp && mv -fT ${BUILD_PATH}${CI_PROJECT_PATH}/current-${CI_PROJECT_NAME}.tmp ${WEBSITE_PATH}${CI_PROJECT_PATH}"
+    -   ssh ${SSH_SERVER} "cd ${WEBSITE_PATH}${CI_PROJECT_PATH}; docker-compose pull; docker-compose up --force-recreate -d"
     - done;IFS=$OLDIFS

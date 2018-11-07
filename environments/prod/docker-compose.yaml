@@ -2,33 +2,37 @@ version: '2'
 
 services:
     cgi:
-        container_name: cgi
-        image: regist.yiiplus.com/moego/cgi
+        container_name: <project_namespace>-<project_name>_cgi
+        image: <registry_url>/<project_path>/<docker_env>/cgi
         restart: always
         expose:
             - "9000"
         volumes:
-            - ./:/www
+            - <website_path><project_path>:/www
+            - <runtime_path><project_path>:<runtime_path><project_path>
         working_dir: /www
     proxy:
-        container_name: proxy
-        image: regist.yiiplus.com/moego/proxy
+        container_name: <project_namespace>-<project_name>_proxy
+        image: <registry_url>/<project_path>/<docker_env>/proxy
         restart: always
         ports:
-            - "80:80"
-            - "443:443"
+            - "<http_port>:80"
+            - "<https_port>:443"
         volumes:
-            - ./manifests/config/proxy/conf.d:/etc/nginx/conf.d
+            - <website_path><project_path>/docker/config/proxy/conf.d:/etc/nginx/conf.d
+            - <runtime_path><project_path>:<runtime_path><project_path>
+            - /data/ssl/moego.net:/ssl
         volumes_from:
             - cgi
-        working_dir: /etc/nginx
+        working_dir: /etc/nginx/conf.d
         links:
             - cgi:cgi
     crond:
-        container_name: crond
-        image: regist.yiiplus.com/moego/crond
+        container_name: <project_namespace>-<project_name>_crond
+        image: <registry_url>/<project_path>/<docker_env>/crond
         restart: always
         volumes:
-            - ./:/www
-            - ./console/crontab:/etc/crontab
+            - <website_path><project_path>:/www
+            - <website_path><project_path>/console/crontab:/etc/crontab
+            - <runtime_path><project_path>:<runtime_path><project_path>
         working_dir: /www

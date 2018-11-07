@@ -56,6 +56,11 @@ return [
         'setExecutable' => [
             'yii',
             'yii_test',
+            'docker/files/cgi/docker-entrypoint.sh',
+            'docker/files/copycode-project/docker-entrypoint.sh',
+            'docker/files/copycode-vendor/docker-entrypoint.sh',
+            'docker/files/crond/docker-entrypoint.sh',
+            'docker/files/proxy/docker-entrypoint.sh',
         ],
         'setCookieValidationKey' => [
             'h5/config/main-local.php',
@@ -78,6 +83,11 @@ return [
         'setExecutable' => [
             'yii',
             'yii_test',
+            'docker/files/cgi/docker-entrypoint.sh',
+            'docker/files/copycode-project/docker-entrypoint.sh',
+            'docker/files/copycode-vendor/docker-entrypoint.sh',
+            'docker/files/crond/docker-entrypoint.sh',
+            'docker/files/proxy/docker-entrypoint.sh',
         ],
         'setCookieValidationKey' => [
             'h5/config/main-local.php',
@@ -99,6 +109,11 @@ return [
         ],
         'setExecutable' => [
             'yii',
+            'docker/files/cgi/docker-entrypoint.sh',
+            'docker/files/copycode-project/docker-entrypoint.sh',
+            'docker/files/copycode-vendor/docker-entrypoint.sh',
+            'docker/files/crond/docker-entrypoint.sh',
+            'docker/files/proxy/docker-entrypoint.sh',
         ],
         'setCookieValidationKey' => [
             'h5/config/main-local.php',

@@ -89,7 +89,7 @@ $this->title = '仪表盘 Dashboard';
                     <td>Composer扩展</td>
                     <td>
                       <a href="https://github.com/yiiplus/yii2-desktop" target="_blank">yiiplus/yii2-desktop</a>
-                      <a href="https://github.com/yiiplus/yii2-fis-smarty" target="_blank">yiiplus/yii2-fis-smarty</a>
+                      <a href="https://github.com/yiiplus/yii2-kvstore" target="_blank">yiiplus/yii2-kvstore</a>
                     </td>
                   </tr>
                   <tr>

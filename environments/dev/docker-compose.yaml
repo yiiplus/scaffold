@@ -13,7 +13,6 @@ services:
         links:
             - mysql:mysql
             - redis:redis
-            - fis3:fis3
             - phpmyadmin:phpmyadmin
     proxy:
         container_name: proxy
@@ -64,15 +63,6 @@ services:
         volumes:
           - ./docker/data/var_lib_redis:/data
         command: redis-server --appendonly yes
-    fis3:
-        container_name: fis3
-        build: ./docker/files/fis3
-        restart: always
-        expose:
-            - "8080"
-        volumes:
-            - ./:/www
-        working_dir: /www
     phpmyadmin:
         container_name: phpmyadmin
         image: daocloud.io/daocloud/phpmyadmin

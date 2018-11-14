@@ -31,7 +31,6 @@
         "yiisoft/yii2-redis": "~2.0.0",
         "yiisoft/yii2-queue": "~2.0.0",
         "yiisoft/yii2-elasticsearch": "~2.0.0",
-        "yiiplus/yii2-fis-smarty": "^2.0.0",
         "yiiplus/yii2-desktop": "^2.0.0",
         "yiiplus/yii2-kvstore": "^2.0.0",
         "yiiplus/yii2-smser": "dev-develop",
@@ -73,19 +72,13 @@
             "php init --env=Development --overwrite=y",
             "composer install -vvv",
             "@docker:start",
-            "@fis3:build",
             "docker-compose ps"
         ],
         "dev:update": [
             "composer update -vvv",
             "@docker:cleanup",
             "@docker:start",
-            "@fis3:build",
             "docker-compose ps"
-        ],
-        "fis3:build": [
-            "docker-compose exec -T fis3 h5/fis3/build.sh",
-            "docker-compose exec -T fis3 pc/fis3/build.sh"
         ],
         "docker:start": [
           "docker-compose up --force-recreate -d"

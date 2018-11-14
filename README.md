@@ -105,7 +105,6 @@ environments/            contains environment-based overrides
     - PC: http://www.scaffold.local
     - H5: http://h5.scaffold.local
     - App: http://app.scaffold.local
-    - FIS3: http://fis3.scaffold.local
     - phpMyAdmin: http://pma.scaffold.local 服务器:mysql 用户名:root 密码:root
 
 ## [文档中心](docs/README.md)

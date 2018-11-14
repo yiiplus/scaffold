@@ -1,24 +1,11 @@
 <?php
-/**
- * 脚手架
- *
- * PHP version 7
- *
- * @category  PHP
- * @package   Yii2
- * @author    Hongbin Chen <hongbin.chen@aliyun.com>
- * @copyright 2006-2018 YiiPlus Ltd
- * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
- * @link      http://www.yiiplus.com
- */
-
 namespace common\models;
 
 use Yii;
+use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-use yii\filters\RateLimitInterface;
 
 /**
  * User model
@@ -33,24 +20,15 @@ use yii\filters\RateLimitInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
- *
- * @category  PHP
- * @package   Yii2
- * @author    Hongbin Chen <hongbin.chen@aliyun.com>
- * @copyright 2006-2018 YiiPlus Ltd
- * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
- * @link      http://www.yiiplus.com
  */
-class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
+class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
 
     /**
-     * 用户表名
-     *
-     * @return string 表名
+     * {@inheritdoc}
      */
     public static function tableName()
     {
@@ -58,9 +36,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * Behaviors
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function behaviors()
     {
@@ -70,9 +46,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * Rules
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function rules()
     {
@@ -83,11 +57,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * Find Identity
-     *
-     * @param int|string $id 用户ID
-     *
-     * @return null|static
+     * {@inheritdoc}
      */
     public static function findIdentity($id)
     {
@@ -95,33 +65,17 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * Find Identity By AccessToken
-     *
-     * @param mixed $token 令牌
-     * @param null  $type  类型
-     *
-     * @return null|static
+     * {@inheritdoc}
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return static::findOne(['auth_key' => $token, 'status' => self::STATUS_ACTIVE]);
-    }
-
-    /**
-     * 生成access_token
-     *
-     * @return void
-     */
-    public function generateAccessToken()
-    {
-        $this->access_token = Yii::$app->security->generateRandomString();
+        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
 
     /**
      * Finds user by username
      *
-     * @param string $username 用户名
-     *
+     * @param string $username
      * @return static|null
      */
     public static function findByUsername($username)
@@ -133,7 +87,6 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      * Finds user by password reset token
      *
      * @param string $token password reset token
-     *
      * @return static|null
      */
     public static function findByPasswordResetToken($token)
@@ -142,14 +95,16 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
             return null;
         }
 
-        return static::findOne(['password_reset_token' => $token, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne([
+            'password_reset_token' => $token,
+            'status' => self::STATUS_ACTIVE,
+        ]);
     }
 
     /**
      * Finds out if password reset token is valid
      *
      * @param string $token password reset token
-     *
      * @return bool
      */
     public static function isPasswordResetTokenValid($token)
@@ -164,9 +119,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * 获取主键ID
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -174,9 +127,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * 获取 auth key
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getAuthKey()
     {
@@ -184,11 +135,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     }
 
     /**
-     * 验证 auth key
-     *
-     * @param string $authKey 令牌
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function validateAuthKey($authKey)
     {
@@ -199,7 +146,6 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
      * Validates password
      *
      * @param string $password password to validate
-     *
      * @return bool if password provided is valid for current user
      */
     public function validatePassword($password)
@@ -210,9 +156,7 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
     /**
      * Generates password hash from password and sets it to the model
      *
-     * @param string $password 密码
-     *
-     * @return void
+     * @param string $password
      */
     public function setPassword($password)
     {
@@ -221,8 +165,6 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 
     /**
      * Generates "remember me" authentication key
-     *
-     * @return void
      */
     public function generateAuthKey()
     {
@@ -231,8 +173,6 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 
     /**
      * Generates new password reset token
-     *
-     * @return void
      */
     public function generatePasswordResetToken()
     {
@@ -241,8 +181,6 @@ class User extends ActiveRecord implements IdentityInterface, RateLimitInterface
 
     /**
      * Removes password reset token
-     *
-     * @return void
      */
     public function removePasswordResetToken()
     {

@@ -1,17 +1,4 @@
 <?php
-/**
- * 脚手架
- *
- * PHP version 7
- *
- * @category  PHP
- * @package   Yii2
- * @author    Hongbin Chen <hongbin.chen@aliyun.com>
- * @copyright 2006-2018 YiiPlus Ltd
- * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
- * @link      http://www.yiiplus.com
- */
-
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -20,7 +7,7 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'console',
+    'id' => 'app-console',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',

@@ -1,21 +1,5 @@
 <?php
-/**
- * 脚手架
- *
- * PHP version 7
- *
- * @category  PHP
- * @package   Yii2
- * @author    Hongbin Chen <hongbin.chen@aliyun.com>
- * @copyright 2006-2018 YiiPlus Ltd
- * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
- * @link      http://www.yiiplus.com
- */
-
-Yii::setAlias('@base', dirname(dirname(__DIR__)));
 Yii::setAlias('@common', dirname(__DIR__));
+Yii::setAlias('@frontend', dirname(dirname(__DIR__)) . '/frontend');
+Yii::setAlias('@backend', dirname(dirname(__DIR__)) . '/backend');
 Yii::setAlias('@console', dirname(dirname(__DIR__)) . '/console');
-Yii::setAlias('@admin', dirname(dirname(__DIR__)) . '/admin');
-Yii::setAlias('@app', dirname(dirname(__DIR__)) . '/app');
-Yii::setAlias('@pc', dirname(dirname(__DIR__)) . '/pc');
-Yii::setAlias('@h5', dirname(dirname(__DIR__)) . '/h5');

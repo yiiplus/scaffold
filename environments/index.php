@@ -1,18 +1,5 @@
 <?php
 /**
- * 脚手架
- *
- * PHP version 7
- *
- * @category  PHP
- * @package   Yii2
- * @author    Hongbin Chen <87003637@qq.com>
- * @copyright 2006-2018 YiiPlus Ltd
- * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
- * @link      http://www.yiiplus.com
- */
-
-/**
  * The manifest of files that are local to specific environment.
  * This file returns a list of environments that the application
  * may be installed under. The returned data must be in the following
@@ -42,68 +29,88 @@
  * ```
  */
 return [
-    'Development' => [
+    'development' => [
         'path' => 'dev',
         'setWritable' => [
-            'h5/runtime',
-            'h5/web/assets',
-            'pc/runtime',
-            'pc/web/assets',
-            'app/runtime',
-            'admin/runtime',
-            'admin/web/assets',
-        ],
-        'setExecutable' => [
-            'yii',
-        ],
-        'setCookieValidationKey' => [
-            'h5/config/main-local.php',
-            'pc/config/main-local.php',
-            'app/config/main-local.php',
-            'admin/config/main-local.php',
-        ],
-    ],
-    'Test' => [
-        'path' => 'test',
-        'setWritable' => [
-            'h5/runtime',
-            'h5/web/assets',
-            'pc/runtime',
-            'pc/web/assets',
-            'app/runtime',
-            'admin/runtime',
-            'admin/web/assets',
+            'console/runtime',
+            'frontend/runtime',
+            'frontend/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'api/runtime',
+            'api/web/assets',
         ],
         'setExecutable' => [
             'yii',
             'yii_test',
         ],
         'setCookieValidationKey' => [
-            'h5/config/main-local.php',
-            'pc/config/main-local.php',
-            'app/config/main-local.php',
-            'admin/config/main-local.php',
+            'common/config/codeception-local.php',
+            'frontend/config/main-local.php',
+            'backend/config/main-local.php',
+            'api/config/main-local.php',
         ],
     ],
-    'Production' => [
-        'path' => 'prod',
+    'testing' => [
+        'path' => 'test',
         'setWritable' => [
-            'h5/runtime',
-            'h5/web/assets',
-            'pc/runtime',
-            'pc/web/assets',
-            'app/runtime',
-            'admin/runtime',
-            'admin/web/assets',
+            'console/runtime',
+            'frontend/runtime',
+            'frontend/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'api/runtime',
+            'api/web/assets',
+        ],
+        'setExecutable' => [
+            'yii',
+            'yii_test',
+        ],
+        'setCookieValidationKey' => [
+            'common/config/codeception-local.php',
+            'frontend/config/main-local.php',
+            'backend/config/main-local.php',
+            'api/config/main-local.php',
+        ],
+    ],
+    'simulation' => [
+        'path' => 'simu',
+        'setWritable' => [
+            'console/runtime',
+            'frontend/runtime',
+            'frontend/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'api/runtime',
+            'api/web/assets',
         ],
         'setExecutable' => [
             'yii',
         ],
         'setCookieValidationKey' => [
-            'h5/config/main-local.php',
-            'pc/config/main-local.php',
-            'app/config/main-local.php',
-            'admin/config/main-local.php',
+            'frontend/config/main-local.php',
+            'backend/config/main-local.php',
+            'api/config/main-local.php',
+        ],
+    ],
+    'master' => [
+        'path' => 'prod',
+        'setWritable' => [
+            'console/runtime',
+            'frontend/runtime',
+            'frontend/web/assets',
+            'backend/runtime',
+            'backend/web/assets',
+            'api/runtime',
+            'api/web/assets',
+        ],
+        'setExecutable' => [
+            'yii',
+        ],
+        'setCookieValidationKey' => [
+            'frontend/config/main-local.php',
+            'backend/config/main-local.php',
+            'api/config/main-local.php',
         ],
     ],
 ];

@@ -5,7 +5,7 @@
  *
  * In order to run in non-interactive mode:
  *
- * init --env=Development --overwrite=n
+ * init --env=development --overwrite=n
  */
 
 if (!extension_loaded('openssl')) {

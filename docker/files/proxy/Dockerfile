@@ -20,3 +20,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 EXPOSE 80 443
 
 CMD ["docker-entrypoint.sh"]
+

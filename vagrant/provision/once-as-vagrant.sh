@@ -19,7 +19,7 @@ cd /app
 composer --no-progress --prefer-dist install
 
 info "Init project"
-./init --env=Development --overwrite=y
+./init --env=development --overwrite=y
 
 info "Apply migrations"
 ./yii migrate --interactive=0

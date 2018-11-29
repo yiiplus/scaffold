@@ -8,16 +8,22 @@ $params = array_merge(
 
 return [
     'id' => 'app-backend',
+    'name' => '运营管理系统',
     'basePath' => dirname(__DIR__),
-    'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'layout' => '@yiiplus/desktop/views/layouts/main.php',
+    'modules' => [
+        'admin' => [
+            'class' => 'yiiplus\desktop\Module',
+        ],
+    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'yiiplus\desktop\models\User',
+            'loginUrl' => ['admin/user/login'],
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
@@ -37,14 +43,24 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+            'defaultRoles' => ['guest'],
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
     ],
+    'as access' => [
+        'class' => 'yiiplus\desktop\components\AccessControl',
+        'allowActions' => [
+            'admin/user/login',
+            'admin/user/logout',
+        ]
+    ],
+    'as log' => 'yiiplus\\desktop\\behaviors\\LogBehavior',
     'params' => $params,
 ];

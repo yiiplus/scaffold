@@ -36,3 +36,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 EXPOSE 9000
 
 CMD ["docker-entrypoint.sh"]
+

@@ -1,11 +1,12 @@
-# scaffold
+<p align="center">
+    <a href="https://github.com/yiisoft" target="_blank">
+        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
+    </a>
+    <h1 align="center">Yii 2 Scaffold Project Kit</h1>
+    <br>
+</p>
 
 易加-脚手架(scaffold)是一个基于[Yii2高级项目模版](https://github.com/yiisoft/yii2-app-advanced)工程化实现的应用程序，它将更加高效、规范和工程化的满足项目开发的需求。
-
-[开发模式] 
-[测试模式] 
-[仿真模式]
-[生产模式] 
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/yiiplus/scaffold.svg)](https://packagist.org/packages/yiiplus/scaffold)
 [![Total Downloads](https://img.shields.io/packagist/dt/yiiplus/scaffold.svg)](https://packagist.org/packages/yiiplus/scaffold)
@@ -17,7 +18,7 @@
 DIRECTORY STRUCTURE
 -------------------
 
-```
+```$xslt
 common
     config/              contains shared configurations
     mail/                contains view files for e-mails
@@ -48,16 +49,24 @@ frontend
     views/               contains view files for the Web application
     web/                 contains the entry script and Web resources
     widgets/             contains frontend widgets
+api
+    config/              contains api configurations
+    controllers/         contains Web controller classes
+    models/              contains api-specific model classes
+    runtime/             contains files generated during runtime
+    tests/               contains tests for api application
+    web/                 contains the entry script and Web resources
 vendor/                  contains dependent 3rd-party packages
+docker/                  contains docker for project
+vagrant/                 contains vagrant for project
 environments/            contains environment-based overrides
 ```
-
 
 ## 快速安装
 
 - 安装 Composer 依赖管理
-	- [MacOS/Linux/Unix](http://docs.phpcomposer.com/00-intro.html#Installation-*nix)
-	- [Windows](http://docs.phpcomposer.com/00-intro.html#Installation-Windows)
+    - [MacOS/Linux/Unix](http://docs.phpcomposer.com/00-intro.html#Installation-*nix)
+    - [Windows](http://docs.phpcomposer.com/00-intro.html#Installation-Windows)
 - 安装 Docker 应用容器引擎
     - [MacOS](https://store.docker.com/editions/community/docker-ce-desktop-mac)
     - [Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows)
@@ -69,12 +78,6 @@ environments/            contains environment-based overrides
 - 基于容器化环境部署
 
     ```bash
-    # 首先，确认您安装了最新版本的 Composer 资源插件
-    composer global require fxp/composer-asset-plugin ^1.4.2 -vvv
-    
-    # 并开启多进程并行下载，加快下载效率
-    composer global require hirak/prestissimo -vvv
-
     # 克隆代码
     git clone https://github.com/yiiplus/scaffold.git
     
@@ -94,10 +97,12 @@ environments/            contains environment-based overrides
     #            "github.com": "<token>"
     #        }
     #    }
-    composer run-script dev:install
-    
-    # 初始化数据库
-    docker exec -it mysql mysql --default-character-set=utf8 -uroot -p -e 'source /schema-mysql.sql'
+    composer run-script docker:build
+
+    # 代码规范检查
+    ./vendor/bin/phpcs --standard=PSR2 --ignore=tests,docs/,docker/,vendor/,console/migrations,backend/runtime,frontend/runtime,api/runtime,console/runtime,frontend/web/assets,backend/web/assets,api/web/assets -n --colors ./
+    # 质量检查工具
+    ./vendor/bin/phpmd environments,common,console,backend,frontend,api text phpmd.xml --exclude tests,docs/,docker/,vendor/,console/migrations,backend/runtime,frontend/runtime,api/runtime,console/runtime,frontend/web/assets,backend/web/assets,api/web/assets
     ```    
 
 - 访问地址
@@ -105,6 +110,7 @@ environments/            contains environment-based overrides
     - PC: http://www.scaffold.local
     - H5: http://h5.scaffold.local
     - App: http://app.scaffold.local
+    - FIS3: http://fis3.scaffold.local
     - phpMyAdmin: http://pma.scaffold.local 服务器:mysql 用户名:root 密码:root
 
 ## [文档中心](docs/README.md)

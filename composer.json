@@ -1,42 +1,93 @@
 {
-    "name": "yiisoft/yii2-app-advanced",
-    "description": "Yii 2 Advanced Project Template",
-    "keywords": ["yii2", "framework", "advanced", "project template"],
-    "homepage": "http://www.yiiframework.com/",
+    "name": "yiiplus/scaffold",
+    "description": "scaffold是一个基于Yii2高级项目模版工程化实现的应用程序",
+    "keywords": ["yii2", "framework", "scaffold", "project template"],
+    "homepage": "https://github.com/yiiplus/",
     "type": "project",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-        "forum": "http://www.yiiframework.com/forum/",
-        "wiki": "http://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii2"
+        "issues": "https://github.com/yiiplus/scaffold/issues?state=open",
+        "source": "https://github.com/yiiplus/scaffold"
     },
-    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Hongbin Chen",
+            "email": "hongbin.chen@aliyun.com"
+        },
+        {
+            "name": "xiankun Geng",
+            "email": "ge2x3k2@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
     "require": {
-        "php": ">=5.4.0",
-        "yiisoft/yii2": "~2.0.14",
-        "yiisoft/yii2-bootstrap": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0"
+        "php": ">=7.1.0",
+        "yiisoft/yii2": "^2.0.0",
+        "yiisoft/yii2-bootstrap": "^2.0.0",
+        "yiisoft/yii2-swiftmailer": "^2.0.0",
+        "yiisoft/yii2-authclient": "^2.0.0",
+        "yiisoft/yii2-httpclient": "~2.0.0",
+        "yiisoft/yii2-jui": "^2.0.0",
+        "yiisoft/yii2-redis": "~2.0.0",
+        "yiisoft/yii2-queue": "~2.0.0",
+        "yiisoft/yii2-elasticsearch": "~2.0.0",
+        "yiiplus/yii2-fis-smarty": "^2.0.0",
+        "yiiplus/yii2-desktop": "^2.0.0",
+        "yiiplus/yii2-kvstore": "^2.0.0",
+        "yiiplus/yii2-smser": "dev-develop",
+        "yiiplus/yii2-mailer": "dev-develop",
+        "yiiplus/yii2-storage": "dev-develop",
+        "yiiplus/yii2-app-version": "dev-develop",
+        "yiiplus/yii2-passport": "dev-develop",
+        "firebase/php-jwt": "^5.0.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
         "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-faker": "~2.0.0",
         "codeception/base": "^2.4.0",
+        "codeception/verify": "~1.0.0",
         "phpunit/phpunit": "~6.5.5",
-        "codeception/verify": "~1.0.0"
+        "squizlabs/php_codesniffer": "^3.0.0",
+        "phpmd/phpmd": "^2.0.0",
+        "bizley/migration": "^2.3"
     },
     "config": {
-        "process-timeout": 1800,
+        "secure-http": false,
+        "process-timeout": 3600,
         "fxp-asset": {
             "enabled": false
         }
     },
-    "repositories": [
+    "repositories":[
         {
             "type": "composer",
-            "url": "https://asset-packagist.org"
+            "url": "https://packagist.laravel-china.org"
+        },
+        {
+            "type": "composer",
+            "url": "http://packagist.yiiplus.com"
         }
-    ]
+    ],
+    "scripts": {
+        "app:migrate": [
+            "./yii migrate --migrationPath=@yii/rbac/migrations/ --interactive=0",
+            "./yii migrate --migrationPath=@yiiplus/desktop/migrations/ --interactive=0",
+            "./yii migrate --migrationPath=@yiiplus/kvstore/migrations/ --interactive=0",
+            "./yii migrate --interactive=0"
+        ],
+        "docker:build": [
+            "php init --env=development --overwrite=y",
+            "@docker:start",
+            "composer install --prefer-dist -vvv",
+            "docker-compose exec -T cgi composer run-script app:migrate",
+            "docker-compose ps"
+        ],
+        "docker:start": [
+            "docker-compose up --force-recreate -d"
+        ],
+        "docker:cleanup": [
+            "docker-compose rm -fsv"
+        ]
+    }
 }

@@ -26,3 +26,4 @@ RUN yum install -y --enablerepo=remi --enablerepo=remi-php71 php \
 COPY docker-entrypoint.sh /usr/local/bin/
 
 CMD ["docker-entrypoint.sh"]
+

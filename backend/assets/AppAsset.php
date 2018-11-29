@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\assets;
+namespace app\assets;
 
 use yii\web\AssetBundle;
 
@@ -19,5 +19,6 @@ class AppAsset extends AssetBundle
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
+        'yiiplus\desktop\DesktopAsset',
     ];
 }

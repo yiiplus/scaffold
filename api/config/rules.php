@@ -1,8 +1,16 @@
 <?php
 
 return [
+    'modules' => [
+        'v1' => [
+            'class' => 'api\modules\v1\Module',
+            'modules' => [
+                'user'   => ['class' => 'api\modules\v1\modules\user\Module'],
+            ],
+        ],
+    ],
 	'components' => [
-		'urlManager' => [
+        'urlManager' => [
             'enablePrettyUrl' => true,
             'enableStrictParsing' => true,
             'showScriptName' => false,

@@ -9,16 +9,16 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace api\modules\user;
+namespace api\modules\v1;
 
 /**
- * 用户模块
+ * version 1 module
  *
- * @author Hongbin Chen <87003637@qq.com>
+ * @author    gengxiankun <gengxiankun@126.com>
  */
 class Module extends \yii\base\Module
 {
-    public $controllerNamespace = 'api\modules\user\controllers';
+    public $controllerNamespace = 'api\modules\v1\controllers';
 
     /**
      * 初始化

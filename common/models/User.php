@@ -1,4 +1,14 @@
 <?php
+/**
+ * yiiplus/scaffold
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @copyright 2018-2019 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt Apache 2.0
+ * @link      http://www.yiiplus.com
+ */
+
 namespace common\models;
 
 use Yii;
@@ -20,6 +30,8 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ *
+ * @author Hongbin Chen <87003637@qq.com>
  */
 class User extends ActiveRecord implements IdentityInterface
 {

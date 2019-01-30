@@ -1,14 +1,11 @@
 <?php
 /**
- * 脚手架
- *
- * PHP version 7
+ * yiiplus/scaffold
  *
  * @category  PHP
  * @package   Yii2
- * @author    Hongbin Chen <87003637@qq.com>
- * @copyright 2006-2018 YiiPlus Ltd
- * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
+ * @copyright 2018-2019 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt Apache 2.0
  * @link      http://www.yiiplus.com
  */
 
@@ -19,12 +16,7 @@ use yii\base\Exception;
 /**
  * ApiException 接口异常对照
  *
- * @category  PHP
- * @package   Yii2
- * @author    Hongbin Chen <87003637@qq.com>
- * @copyright 2006-2018 YiiPlus Ltd
- * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
- * @link      http://www.yiiplus.com
+ * @author Hongbin Chen <87003637@qq.com>
  */
 class ApiException extends Exception
 {

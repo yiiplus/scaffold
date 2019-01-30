@@ -14,6 +14,8 @@
 
 namespace api\modules\user\controllers;
 
+use Yii;
+
 /**
  * 账号API
  *
@@ -27,16 +29,33 @@ namespace api\modules\user\controllers;
 class AccountController extends \api\modules\Controller
 {
     /**
-     * 列表
+     * 用户送给主播火箭的接口
      *
      * @return \yii\data\ArrayDataProvider
      */
     public function actionIndex()
     {
-        $result = [
-            ['uid'=>1, 'username'=> 'jacky', 'email'=>'87003637@qq.com','access-token'=> md5(mt_rand(10000, 20000))],
-            ['uid'=>2, 'username'=> 'test', 'email'=>'test@qq.com','access-token'=> md5(mt_rand(10000, 20000))],
-        ];
+        /**
+        zoom_id
+        uid
+        type
+        ....
+        if feiji
+
+        */
+
+        $websocket = Yii::$app->websocket;
+        $status = $websocket->send([
+            'channel' => 'push',
+            'room_id' => 2,
+            'message' => '用户 3 送给主播 2 一架飞机！'
+        ]);
+
+[
+    'uid' => 3
+    'name' =>
+    'zome'
+]
 
         return new \yii\data\ArrayDataProvider(['allModels' =>$result]);
     }
@@ -71,7 +90,5 @@ class AccountController extends \api\modules\Controller
     public function actionError()
     {
         throw new \Exception('系统错误', 100001);
-
-        throw new \yii\web\NotFoundHttpException('系统错误');
     }
 }

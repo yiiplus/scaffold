@@ -1,5 +1,8 @@
 <?php
 return [
+    'bootstrap' => [
+        'websocket',
+    ],
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
@@ -15,6 +18,14 @@ return [
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
             'useFileTransport' => true,
+        ],
+        'websocket' => [
+            'class' => 'yiiplus\websocket\workerman\WebSocket',
+            'host' => '',
+            'port' => '9501',
+            'channels' => [
+                'push' => '\common\channels\PushChannel',
+            ],
         ],
     ],
 ];

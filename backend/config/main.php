@@ -53,6 +53,13 @@ return [
             'rules' => [
             ],
         ],
+        'assetManager' => [
+            'bundles' => [
+                'dmstr\web\AdminLteAsset' => [
+                    'skin' => 'skin-black',
+                ],
+            ],
+        ],
     ],
     'as access' => [
         'class' => 'yiiplus\desktop\components\AccessControl',

@@ -39,7 +39,9 @@
         "yiiplus/yii2-storage": "dev-develop",
         "yiiplus/yii2-app-version": "dev-develop",
         "yiiplus/yii2-passport": "dev-develop",
-        "firebase/php-jwt": "^5.0.0"
+        "firebase/php-jwt": "^5.0.0",
+        "workerman/workerman": "^3.5",
+        "yiiplus/yii2-websocket": "^1.0.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

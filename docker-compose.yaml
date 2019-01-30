@@ -44,6 +44,16 @@ services:
     links:
       - mysql:mysql
       - redis:redis
+  websocket:
+    container_name: websocket
+    build: ./docker/files/websocket
+    restart: always
+    ports:
+      - "9501:9501"
+    volumes_from:
+      - cgi
+    working_dir: /www
+    command: /www/yii websocket
   mysql:
     container_name: mysql
     image: daocloud.io/library/mysql:5.6
@@ -67,31 +77,15 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./docker/runtime/var_lib_redis:/data
+      - ./docker/runtime/var_lib_redis:/var/lib/redis
     command: redis-server --appendonly yes
-  phpmyadmin:
-    container_name: phpmyadmin
-    image: daocloud.io/daocloud/phpmyadmin
-    expose:
-      - '80'
-    environment:
-      - PMA_ARBITRARY=0
-      - PMA_HOST=mysql
-      - PMA_USER=root
-      - PMA_PASSWORD=root
-    depends_on:
-      - mysql
-    links:
-      - mysql:mysql
-  phpredisadmin:
-    container_name: phpredisadmin
-    image: erikdubbelboer/phpredisadmin
-    expose:
-      - '80'
-    environment:
-      - REDIS_1_HOST=redis
-      - REDIS_1_NAME=redis
-    depends_on:
-      - redis
-    links:
-      - redis:redis
+  filebeat:
+    container_name: filebeat
+    restart: always
+    image: docker.elastic.co/beats/filebeat:6.4.3
+    volumes:
+      - ./docker/config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./docker/config/filebeat/prospectors.d:/usr/share/filebeat/prospectors.d
+      - ./docker/config/filebeat/modules.d:/usr/share/filebeat/modules.d
+    volumes_from:
+      - cgi

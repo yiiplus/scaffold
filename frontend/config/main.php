@@ -1,4 +1,14 @@
 <?php
+/**
+ * yiiplus/scaffold
+ *
+ * @category  PHP
+ * @package   Yii2
+ * @copyright 2018-2019 YiiPlus Ltd
+ * @license   https://github.com/yiiplus/scaffold/licence.txt Apache 2.0
+ * @link      http://www.yiiplus.com
+ */
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',

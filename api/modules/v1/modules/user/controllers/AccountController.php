@@ -12,7 +12,7 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace api\modules\user\controllers;
+namespace api\modules\v1\modules\user\controllers;
 
 /**
  * 账号API
@@ -24,7 +24,7 @@ namespace api\modules\user\controllers;
  * @license   https://github.com/yiiplus/scaffold/licence.txt BSD Licence
  * @link      http://www.yiiplus.com
  */
-class AccountController extends \api\modules\Controller
+class AccountController extends \api\base\Controller
 {
     /**
      * 列表
@@ -34,8 +34,8 @@ class AccountController extends \api\modules\Controller
     public function actionIndex()
     {
         $result = [
-            ['uid'=>1, 'username'=> 'jacky', 'email'=>'87003637@qq.com','access-token'=> md5(mt_rand(10000, 20000))],
-            ['uid'=>2, 'username'=> 'test', 'email'=>'test@qq.com','access-token'=> md5(mt_rand(10000, 20000))],
+            ['uid'=>1, 'username'=> 'jacky', 'email'=>'87003637@qq.com', 'access-token'=> md5(mt_rand(10000, 20000))],
+            ['uid'=>2, 'username'=> 'test', 'email'=>'test@qq.com', 'access-token'=> md5(mt_rand(10000, 20000))],
         ];
 
         return new \yii\data\ArrayDataProvider(['allModels' =>$result]);

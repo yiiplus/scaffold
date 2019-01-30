@@ -12,7 +12,7 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace api\modules\user;
+namespace api\modules\v1\modules\user;
 
 /**
  * 用户模块
@@ -26,7 +26,7 @@ namespace api\modules\user;
  */
 class Module extends \yii\base\Module
 {
-    public $controllerNamespace = 'api\modules\user\controllers';
+    public $controllerNamespace = 'api\modules\v1\modules\user\controllers';
 
     /**
      * 初始化

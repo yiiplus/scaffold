@@ -11,11 +11,12 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'modules' => [
-        'user'   => ['class' => 'api\modules\user\Module'],
-        'shop'   => ['class' => 'api\modules\shop\Module'],
-        'cms'    => ['class' => 'api\modules\cms\Module'],
-        'bbs'    => ['class' => 'api\modules\bbs\Module'],
-        'common' => ['class' => 'api\modules\common\Module'],
+        'v1' => [
+            'class' => 'api\modules\v1\Module',
+            'modules' => [
+                'user'   => ['class' => 'api\modules\v1\modules\user\Module'],
+            ],
+        ],
     ],
     'components' => [
         'user' => [
@@ -30,23 +31,6 @@ return [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
-                ],
-            ],
-        ],
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'enableStrictParsing' => true,
-            'showScriptName' => false,
-            'rules' => [
-                [
-                    'class' => 'yii\rest\UrlRule',
-                    'pluralize' => false,
-                    'controller' => 'user/account',
-                    'extraPatterns' => [
-                        'GET login'  => 'login',
-                        'GET logout' => 'logout',
-                        'GET error'  => 'error',
-                    ],
                 ],
             ],
         ],

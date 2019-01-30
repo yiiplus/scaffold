@@ -12,7 +12,7 @@
  * @link      http://www.yiiplus.com
  */
 
-namespace api\modules;
+namespace api\base;
 
 use Yii;
 use yii\web\Response;

@@ -22,6 +22,7 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
+            'class' => yii\web\User::class,
             'identityClass' => 'yiiplus\desktop\models\User',
             'loginUrl' => ['admin/user/login'],
             'enableAutoLogin' => true,

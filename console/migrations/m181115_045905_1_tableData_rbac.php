@@ -62,9 +62,6 @@ class m181115_045905_1_tableData_rbac extends \yii\db\Migration
                 ['/admin/user/reset-password', 2, null, null, null, 1487816732, 1487816732],
                 ['/admin/user/update', 2, null, null, null, 1487816732, 1487816732],
                 ['/admin/user/view', 2, null, null, null, 1487816732, 1487816732],
-                ['/site/*', 2, null, null, null, 1487816732, 1487816732],
-                ['/site/error', 2, null, null, null, 1487816732, 1487816732],
-                ['/site/index', 2, null, null, null, 1487816732, 1487816732],
                 ['超级管理员', 1, null, null, null, 1487817275, 1487817275],
             ]
         );
@@ -124,9 +121,6 @@ class m181115_045905_1_tableData_rbac extends \yii\db\Migration
                 ['超级管理员', '/admin/user/reset-password'],
                 ['超级管理员', '/admin/user/update'],
                 ['超级管理员', '/admin/user/view'],
-                ['超级管理员', '/site/*'],
-                ['超级管理员', '/site/error'],
-                ['超级管理员', '/site/index'],
             ]
         );
 

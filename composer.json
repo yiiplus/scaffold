@@ -54,10 +54,7 @@
     },
     "config": {
         "secure-http": false,
-        "process-timeout": 3600,
-        "fxp-asset": {
-            "enabled": false
-        }
+        "process-timeout": 3600
     },
     "repositories":[
         {

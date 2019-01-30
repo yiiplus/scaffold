@@ -14,28 +14,28 @@ class m181115_045905_1_tableData_yiiplus_desktop extends \yii\db\Migration
             ]
         );
         $this->batchInsert('{{%yp_desktop_menu}}', 
-            ['id', 'name', 'parent', 'route', 'order', 'data'],
+            ['id', 'name', 'parent', 'route', 'icon', 'order', 'data'],
             [
-                [1, '仪表盘', null, '/', 100, '{"icon":"dashboard"}'],
-                [2, '系统设置', null, null, 200, '{"icon":"cog"}'],
-                [3, '菜单列表', 2, '/admin/menu/index', 1, '{"icon":"list"}'],
-                [4, '操作日志', 2, '/admin/log/index', 2, '{"icon":"file"}'],
-                [5, '用户管理', 2, '/admin/user/index', 2, '{"icon":"user"}'],
-                [6, '角色列表', 2, '/admin/role/index', 3, '{"icon":"users"}'],
-                [7, '访问控制', 2, null, 4, '{"icon":"laptop"}'],
-                [8, '路由列表', 7, '/admin/route/index', 61, '{"icon":"circle"}'],
-                [9, '规则列表', 7, '/admin/rule/index', 62, '{"icon":"circle"}'],
-                [10, '权限列表', 7, '/admin/permission/index', 63, '{"icon":"circle"}'],
+                [1, '仪表盘', null, '/', 'dashboard', 100, ''],
+                [2, '系统设置', null, null, 'cog', 200, ''],
+                [3, '菜单列表', 2, '/admin/menu/index', 'list', 1, ''],
+                [4, '操作日志', 2, '/admin/log/index', 'file', 2, ''],
+                [5, '用户管理', 2, '/admin/user/index', 'user', 2, ''],
+                [6, '角色列表', 2, '/admin/role/index', 'users', 3, ''],
+                [7, '访问控制', 2, null, 'laptop', 4, ''],
+                [8, '路由列表', 7, '/admin/route/index', 'circle', 61, ''],
+                [9, '规则列表', 7, '/admin/rule/index', 'circle', 62, ''],
+                [10, '权限列表', 7, '/admin/permission/index', 'circle', 63, ''],
             ]
         );
 
         if(YII_ENV_DEV) {
             $this->batchInsert('{{%yp_desktop_menu}}', 
-                ['name', 'parent', 'route', 'order', 'data'],
+                ['name', 'parent', 'route', 'icon', 'order', 'data'],
                 [
-                    ['GII', null, '/gii/default/index', 997, ''],
-                    ['迁移', null, '/migration/default/index', 998, ''],
-                    ['调试', null, '/debug/default/index', 999, ''],
+                    ['GII', null, '/admin/gii/default/index', 'circle', 997, ''],
+                    ['迁移', null, '/admin/migrations/default/index', 'circle', 998, ''],
+                    ['调试', null, '/debug/default/index', 'circle', 999, ''],
                 ]
             );
         }

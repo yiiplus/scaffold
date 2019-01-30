@@ -9,7 +9,7 @@ return [
             ],
         ],
     ],
-	'components' => [
+    'components' => [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'enableStrictParsing' => true,
